@@ -21,6 +21,9 @@ export class Discipline {
   @Column()
   colorClass: string;
 
+  @Column({ type: "text", nullable: true })
+  lekcija: string | null;
+
   @Column({ default: 0 })
   order: number;
 

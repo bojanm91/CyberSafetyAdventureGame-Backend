@@ -16,6 +16,16 @@ export type QuestType =
   | "spot_danger"
   | "decision";
 
+export type InteractionType =
+  | "odluka"
+  | "phishing_inbox"
+  | "lozinka"
+  | "razvrstaj"
+  | "pravo_lazno"
+  | "razgovor"
+  | "podesi"
+  | "brzi_krug";
+
 @Entity("quests")
 export class Quest {
   @PrimaryGeneratedColumn("uuid")
@@ -56,6 +66,22 @@ export class Quest {
 
   @Column({ default: true })
   isActive: boolean;
+
+  // New interaction system fields
+  @Column({ type: "varchar", length: 30, nullable: true })
+  interactionType: InteractionType | null;
+
+  @Column({ type: "json", nullable: true })
+  gameData: Record<string, unknown> | null;
+
+  @Column({ type: "json", nullable: true })
+  correctData: Record<string, unknown> | null;
+
+  @Column({ type: "text", nullable: true })
+  objasnjenje: string | null;
+
+  @Column({ default: 0 })
+  xp: number;
 
   @OneToMany(() => QuestOption, (o) => o.quest, { eager: true })
   options: QuestOption[];

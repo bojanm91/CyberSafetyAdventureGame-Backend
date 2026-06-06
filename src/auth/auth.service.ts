@@ -36,6 +36,11 @@ export class AuthService {
       level: user.level,
       points: user.points,
       streak: user.streak,
+      codename: user.codename ?? null,
+      avatarBase: user.avatarBase ?? "A",
+      avatarColor: user.avatarColor ?? "#22D3EE",
+      avatarGear: user.avatarGear ?? "none",
+      onboardingDone: user.onboardingDone ?? false,
     };
   }
 

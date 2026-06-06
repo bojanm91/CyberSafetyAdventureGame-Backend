@@ -37,6 +37,22 @@ export class User {
   @Column({ type: "date", nullable: true })
   lastActivity: string | null;
 
+  // Avatar fields
+  @Column({ type: "varchar", length: 50, nullable: true })
+  codename: string | null;
+
+  @Column({ type: "varchar", length: 5, nullable: true, default: "A" })
+  avatarBase: string | null;
+
+  @Column({ type: "varchar", length: 20, nullable: true, default: "#22D3EE" })
+  avatarColor: string | null;
+
+  @Column({ type: "varchar", length: 20, nullable: true, default: "none" })
+  avatarGear: string | null;
+
+  @Column({ default: false })
+  onboardingDone: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
