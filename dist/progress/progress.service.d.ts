@@ -1,37 +1,48 @@
+import { Repository } from "typeorm";
+import { User } from "../entities/user.entity";
+import { UserQuestProgress } from "../entities/user-quest-progress.entity";
+import { UserBadge } from "../entities/user-badge.entity";
+import { Quest } from "../entities/quest.entity";
 export declare class ProgressService {
-    getMe(): {
-        nextMission: {
-            id: string;
-            discipline: string;
-            title: string;
-            difficulty: string;
-            points: number;
-            status: string;
-            summary: string;
-        };
-        dashboardPreview: {
-            title: string;
-            text: string;
-            label: string;
-        }[];
+    private readonly userRepo;
+    private readonly progressRepo;
+    private readonly userBadgeRepo;
+    private readonly questRepo;
+    constructor(userRepo: Repository<User>, progressRepo: Repository<UserQuestProgress>, userBadgeRepo: Repository<UserBadge>, questRepo: Repository<Quest>);
+    getMe(userId: string): Promise<{
         profile: {
+            id: string;
             username: string;
+            email: string;
             status: string;
             level: number;
+            points: number;
             streak: number;
         };
         stats: {
-            points: number;
+            xpPercentage: number;
             xpToNextLevel: number;
-            badges: number;
+            completedQuests: number;
+            totalQuests: number;
+            badgesCount: number;
         };
-        recommended: {
+        badges: {
+            id: string;
+            name: string;
+            icon: string;
+            description: string;
+            earnedAt: Date;
+        }[];
+        disciplineStats: Record<string, {
+            total: number;
+            completed: number;
+            points: number;
+        }>;
+        nextRecommended: {
+            id: string;
             title: string;
-            summary: string;
-        };
-        dailyChallenge: {
-            title: string;
-            summary: string;
-        };
-    };
+            discipline: string;
+        } | null;
+    }>;
+    private findNextRecommended;
 }

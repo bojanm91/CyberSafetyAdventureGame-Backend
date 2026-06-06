@@ -28,7 +28,7 @@ export class Badge {
   @Column({ type: "varchar", length: 30 })
   conditionType: BadgeConditionType;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   conditionValue: string | null;
 
   @OneToMany(() => UserBadge, (ub) => ub.badge)

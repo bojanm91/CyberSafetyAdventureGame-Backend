@@ -21,12 +21,8 @@ import { UserBadge } from "./entities/user-badge.entity";
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
-      type: "postgres",
+      type: "mysql",
       url: process.env.DATABASE_URL,
-      ssl:
-        process.env.NODE_ENV === "production"
-          ? { rejectUnauthorized: false }
-          : false,
       entities: [User, Discipline, Quest, QuestOption, UserQuestProgress, Badge, UserBadge],
       synchronize: true,
     }),
