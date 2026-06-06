@@ -9,7 +9,8 @@ async function bootstrap() {
     origin: [
       "http://localhost:3000",
       "http://127.0.0.1:3000",
-    ],
+      process.env.FRONTEND_URL ?? "",
+    ].filter(Boolean),
     credentials: true,
   });
   app.setGlobalPrefix("api");
@@ -23,6 +24,7 @@ async function bootstrap() {
 
   const port = process.env.PORT ? Number(process.env.PORT) : 4000;
   await app.listen(port);
+  console.log(`Backend pokrenut na portu ${port}`);
 }
 
 void bootstrap();

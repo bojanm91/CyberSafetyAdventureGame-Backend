@@ -3,90 +3,80 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import * as bcrypt from "bcryptjs";
+import { User } from "../entities/user.entity";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 
-type UserRecord = {
-  id: string;
-  username: string;
-  email: string;
-  password: string;
-  status: string;
-};
-
 @Injectable()
 export class AuthService {
-  private readonly users: UserRecord[] = [
-    {
-      id: "user-demo-1",
-      username: "Bojan",
-      email: "bojan@example.com",
-      password: "password123",
-      status: "Junior Defender",
-    },
-  ];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  login(loginDto: LoginDto) {
-    const user = this.users.find((entry) => {
-      if (loginDto.email) {
-        return entry.email.toLowerCase() === loginDto.email.toLowerCase();
-      }
-
-      if (loginDto.username) {
-        return entry.username.toLowerCase() === loginDto.username.toLowerCase();
-      }
-
-      return false;
+  private buildToken(user: User): string {
+    return this.jwtService.sign({
+      sub: user.id,
+      username: user.username,
+      email: user.email,
     });
+  }
 
-    if (!user || user.password !== loginDto.password) {
-      throw new UnauthorizedException("Neispravni kredencijali.");
-    }
-
+  private safeUser(user: User) {
     return {
-      accessToken: "demo-token-" + user.id,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        status: user.status,
-      },
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      status: user.status,
+      level: user.level,
+      points: user.points,
+      streak: user.streak,
     };
   }
 
-  register(registerDto: RegisterDto) {
+  async login(loginDto: LoginDto) {
+    const user = loginDto.email
+      ? await this.userRepository.findOneBy({ email: loginDto.email.toLowerCase() })
+      : await this.userRepository.findOneBy({ username: loginDto.username });
+
+    if (!user) throw new UnauthorizedException("Neispravni kredencijali.");
+
+    const passwordMatch = await bcrypt.compare(loginDto.password, user.passwordHash);
+    if (!passwordMatch) throw new UnauthorizedException("Neispravni kredencijali.");
+
+    return { accessToken: this.buildToken(user), user: this.safeUser(user) };
+  }
+
+  async register(registerDto: RegisterDto) {
     if (registerDto.password !== registerDto.confirmPassword) {
       throw new BadRequestException("Lozinke se ne poklapaju.");
     }
 
-    const existingUser = this.users.find(
-      (entry) =>
-        entry.email.toLowerCase() === registerDto.email.toLowerCase() ||
-        entry.username.toLowerCase() === registerDto.username.toLowerCase(),
-    );
+    const exists = await this.userRepository.findOne({
+      where: [
+        { email: registerDto.email.toLowerCase() },
+        { username: registerDto.username },
+      ],
+    });
+    if (exists) throw new BadRequestException("Korisnik već postoji.");
 
-    if (existingUser) {
-      throw new BadRequestException("Korisnik već postoji.");
-    }
-
-    const user: UserRecord = {
-      id: `user-${this.users.length + 1}`,
+    const passwordHash = await bcrypt.hash(registerDto.password, 12);
+    const user = this.userRepository.create({
       username: registerDto.username,
-      email: registerDto.email,
-      password: registerDto.password,
+      email: registerDto.email.toLowerCase(),
+      passwordHash,
       status: "Cyber Rookie",
-    };
+      level: 1,
+      points: 0,
+      streak: 0,
+    });
 
-    this.users.push(user);
-
-    return {
-      accessToken: "demo-token-" + user.id,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        status: user.status,
-      },
-    };
+    await this.userRepository.save(user);
+    return { accessToken: this.buildToken(user), user: this.safeUser(user) };
   }
 }
