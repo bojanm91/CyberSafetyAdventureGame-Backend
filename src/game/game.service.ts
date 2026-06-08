@@ -70,18 +70,18 @@ function xpForNextLevel(level: number): number {
   return XP_LEVELS[level] ?? XP_LEVELS[XP_LEVELS.length - 1] + 300;
 }
 
-const GAME_BADGES = [
-  { slug: "prvi-korak", name: "Prvi korak", icon: "🎯", condition: "first_result" },
-  { slug: "lovac-na-phishing", name: "Lovac na phishing", icon: "🎣", condition: "phishing_10" },
-  { slug: "kovac-lozinki", name: "Kovač lozinki", icon: "⚒️", condition: "lozinka_5" },
-  { slug: "bez-greske", name: "Bez greške", icon: "💎", condition: "perfect_topic" },
-  { slug: "niz-od-7", name: "Niz od 7", icon: "🔥", condition: "streak_7" },
-  { slug: "mrezni-cuvar", name: "Mrežni Čuvar", icon: "🛡️", condition: "level_9" },
-  { slug: "brze-ruke", name: "Brze ruke", icon: "⚡", condition: "brzi_krug_fast" },
-  { slug: "sveznalica", name: "Sveznalica", icon: "🧠", condition: "all_topics" },
-  { slug: "oprezni", name: "Oprezni", icon: "👁️", condition: "threats_20" },
-  { slug: "postojan", name: "Postojan", icon: "🏆", condition: "daily_30" },
-];
+const GAME_BADGE_SLUGS = new Set([
+  "prvi-korak",
+  "lovac-na-phishing",
+  "kovac-lozinki",
+  "bez-greske",
+  "niz-od-7",
+  "mrezni-cuvar",
+  "brze-ruke",
+  "sveznalica",
+  "oprezni",
+  "postojan",
+]);
 
 @Injectable()
 export class GameService {
@@ -255,7 +255,7 @@ export class GameService {
       await this.progressRepo.save(progress);
     }
 
-    const earnedBadges = await this.checkBadges(user, dto, quest?.discipline?.slug);
+    const earnedBadges = await this.checkBadges(user, dto);
 
     return {
       correct: dto.correct,
@@ -270,7 +270,7 @@ export class GameService {
     };
   }
 
-  private async checkBadges(user: User, dto: SubmitResultDto, disciplineSlug?: string | null) {
+  private async checkBadges(user: User, dto: SubmitResultDto) {
     const earned: Array<{ name: string; icon: string }> = [];
     const existingSlugs = new Set(user.userBadges?.map((ub) => ub.badge.slug) ?? []);
     const allBadges = await this.badgeRepo.find();
@@ -279,27 +279,98 @@ export class GameService {
       "SELECT correct, disciplineSlug, xpEarned, questId FROM results WHERE userId = ?",
       [user.id],
     );
-
-    const allCorrect = allResults.filter((r) => isCorrect(r.correct));
-    const slugCounts = allCorrect.reduce<Record<string, number>>((acc, r) => {
-      if (r.disciplineSlug) acc[r.disciplineSlug] = (acc[r.disciplineSlug] ?? 0) + 1;
+    const activeGameQuests = (await this.questRepo.find({
+      where: { isActive: true },
+      relations: ["discipline"],
+    })).filter((q) => q.interactionType != null);
+    const questSlugById = new Map(
+      activeGameQuests.map((q) => [q.id, q.discipline?.slug ?? q.discipline?.name ?? "other"]),
+    );
+    const totalBySlug = activeGameQuests.reduce<Record<string, number>>((acc, q) => {
+      const slug = q.discipline?.slug ?? "other";
+      acc[slug] = (acc[slug] ?? 0) + 1;
       return acc;
     }, {});
-    const topicSlugsWithResults = Object.keys(slugCounts);
+    const topicSlugs = Object.keys(totalBySlug);
+
+    const progressRecords = (await this.progressRepo.find({
+      where: { user: { id: user.id } },
+      relations: ["quest", "quest.discipline"],
+    })).filter((p) => p.score > 0 && p.quest?.interactionType != null);
+
+    const completedQuestIds = new Set<string>();
+    const completedBySlug: Record<string, Set<string>> = {};
+    const correctBySlug: Record<string, Set<string>> = {};
+    const wrongBySlug: Record<string, number> = {};
+
+    const mark = (bucket: Record<string, Set<string>>, slug: string, questId: string) => {
+      if (!bucket[slug]) bucket[slug] = new Set<string>();
+      bucket[slug].add(questId);
+    };
+
+    for (const r of allResults) {
+      if (!r.questId) continue;
+      const slug = questSlugById.get(r.questId) ?? r.disciplineSlug ?? "other";
+      if (isCorrect(r.correct)) {
+        completedQuestIds.add(r.questId);
+        mark(completedBySlug, slug, r.questId);
+        mark(correctBySlug, slug, r.questId);
+      } else {
+        wrongBySlug[slug] = (wrongBySlug[slug] ?? 0) + 1;
+      }
+    }
+
+    for (const p of progressRecords) {
+      const questId = p.quest.id;
+      const slug = p.quest.discipline?.slug ?? "other";
+      completedQuestIds.add(questId);
+      mark(completedBySlug, slug, questId);
+      mark(correctBySlug, slug, questId);
+    }
+
+    const completedCountBySlug = Object.fromEntries(
+      Object.entries(completedBySlug).map(([slug, ids]) => [slug, ids.size]),
+    ) as Record<string, number>;
+    const correctCountBySlug = Object.fromEntries(
+      Object.entries(correctBySlug).map(([slug, ids]) => [slug, ids.size]),
+    ) as Record<string, number>;
+
+    const requiredTopicCount = (slug: string, desired: number) => {
+      const total = totalBySlug[slug] ?? desired;
+      return total > 0 ? Math.min(desired, total) : desired;
+    };
+    const completedTopics = topicSlugs.filter((slug) => (completedCountBySlug[slug] ?? 0) > 0);
+    const perfectTopic = topicSlugs.some((slug) => {
+      const total = totalBySlug[slug] ?? 0;
+      return total > 0 &&
+        (completedCountBySlug[slug] ?? 0) >= total &&
+        (correctCountBySlug[slug] ?? 0) >= total &&
+        (wrongBySlug[slug] ?? 0) === 0;
+    });
 
     for (const badge of allBadges) {
+      if (!GAME_BADGE_SLUGS.has(badge.slug)) continue;
       if (existingSlugs.has(badge.slug)) continue;
       let earn = false;
 
       switch (badge.slug) {
         case "prvi-korak":
-          earn = allResults.length === 1;
+          earn = completedQuestIds.size >= 1;
           break;
         case "lovac-na-phishing":
-          earn = (slugCounts["phishing"] ?? 0) >= 10 || (slugCounts["phishing-harbor"] ?? 0) >= 10;
+          earn = (completedCountBySlug.phishing ?? 0) >= requiredTopicCount("phishing", 10);
           break;
         case "kovac-lozinki":
-          earn = (slugCounts["lozinke"] ?? 0) >= 5 || (slugCounts["password-base"] ?? 0) >= 5;
+          earn = (completedCountBySlug.lozinke ?? 0) >= requiredTopicCount("lozinke", 5);
+          break;
+        case "bez-greske":
+          earn = perfectTopic;
+          break;
+        case "brze-ruke":
+          earn = dto.correct && dto.timeMs != null && dto.timeMs <= 30000;
+          break;
+        case "sveznalica":
+          earn = topicSlugs.length > 0 && completedTopics.length >= topicSlugs.length;
           break;
         case "niz-od-7":
           earn = user.streak >= 7;
@@ -308,7 +379,10 @@ export class GameService {
           earn = computeLevel(user.points) >= 9;
           break;
         case "oprezni":
-          earn = allCorrect.length >= 20;
+          earn = completedQuestIds.size >= Math.min(20, activeGameQuests.length || 20);
+          break;
+        case "postojan":
+          earn = user.streak >= 30;
           break;
       }
 

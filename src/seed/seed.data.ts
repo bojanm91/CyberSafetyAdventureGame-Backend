@@ -123,13 +123,13 @@ export const BADGES_DATA = [
 
 export const GAME_BADGES_DATA = [
   { name: "Prvi korak", slug: "prvi-korak", description: "Završio/la prvi scenarij u igri.", icon: "🎯", conditionType: "quests_count" as const, conditionValue: "1" },
-  { name: "Lovac na phishing", slug: "lovac-na-phishing", description: "Tačno riješio/la 10 phishing scenarija.", icon: "🎣", conditionType: "discipline_complete" as const, conditionValue: "phishing" },
-  { name: "Kovač lozinki", slug: "kovac-lozinki", description: "Iskujao/la 5 jakih lozinki.", icon: "⚒️", conditionType: "discipline_complete" as const, conditionValue: "lozinke" },
+  { name: "Lovac na phishing", slug: "lovac-na-phishing", description: "Završio/la sve phishing scenarije.", icon: "🎣", conditionType: "discipline_complete" as const, conditionValue: "phishing" },
+  { name: "Kovač lozinki", slug: "kovac-lozinki", description: "Završio/la sve scenarije o lozinkama.", icon: "⚒️", conditionType: "discipline_complete" as const, conditionValue: "lozinke" },
   { name: "Bez greške", slug: "bez-greske", description: "Završio/la temu sa 100% tačnih odgovora.", icon: "💎", conditionType: "perfect_score" as const, conditionValue: null },
   { name: "Niz od 7", slug: "niz-od-7", description: "7 dana zaredom aktivan/na.", icon: "🔥", conditionType: "quests_count" as const, conditionValue: "7" },
   { name: "Mrežni Čuvar", slug: "mrezni-cuvar", description: "Dostigao/la Level 9.", icon: "🛡️", conditionType: "all_complete" as const, conditionValue: null },
   { name: "Brze ruke", slug: "brze-ruke", description: "Završio/la Brzi krug za manje od 30 sekundi.", icon: "⚡", conditionType: "no_hint" as const, conditionValue: null },
-  { name: "Sveznalica", slug: "sveznalica", description: "Riješio/la scenarije iz svih 10 tema.", icon: "🧠", conditionType: "all_complete" as const, conditionValue: null },
+  { name: "Sveznalica", slug: "sveznalica", description: "Završio/la bar jednu misiju iz svake teme.", icon: "🧠", conditionType: "all_complete" as const, conditionValue: null },
   { name: "Oprezni", slug: "oprezni", description: "Prepoznao/la 20 cyber prijetnji.", icon: "👁️", conditionType: "quests_count" as const, conditionValue: "20" },
   { name: "Postojan", slug: "postojan", description: "Učestvovao/la u 30 dnevnih izazova.", icon: "🏆", conditionType: "quests_count" as const, conditionValue: "30" },
 ];

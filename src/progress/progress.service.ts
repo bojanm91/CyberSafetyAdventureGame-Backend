@@ -138,7 +138,7 @@ export class ProgressService {
         totalQuests,
         badgesCount: userBadges.length,
       },
-      badges: userBadges.slice(0, 6).map((ub) => ({
+      badges: userBadges.map((ub) => ({
         id: ub.badge.id,
         name: ub.badge.name,
         icon: ub.badge.icon,

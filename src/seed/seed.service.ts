@@ -126,6 +126,9 @@ export class SeedService implements OnApplicationBootstrap {
       const exists = await this.badgeRepo.findOneBy({ slug: b.slug });
       if (!exists) {
         await this.badgeRepo.save(this.badgeRepo.create(b));
+      } else {
+        this.badgeRepo.merge(exists, b);
+        await this.badgeRepo.save(exists);
       }
     }
   }
