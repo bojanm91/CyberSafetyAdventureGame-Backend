@@ -52,11 +52,20 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const bcrypt = __importStar(require("bcryptjs"));
 const user_entity_1 = require("../entities/user.entity");
+const result_entity_1 = require("../entities/result.entity");
+const user_badge_entity_1 = require("../entities/user-badge.entity");
+const user_quest_progress_entity_1 = require("../entities/user-quest-progress.entity");
 let AuthService = class AuthService {
     userRepository;
+    resultRepository;
+    userBadgeRepository;
+    progressRepository;
     jwtService;
-    constructor(userRepository, jwtService) {
+    constructor(userRepository, resultRepository, userBadgeRepository, progressRepository, jwtService) {
         this.userRepository = userRepository;
+        this.resultRepository = resultRepository;
+        this.userBadgeRepository = userBadgeRepository;
+        this.progressRepository = progressRepository;
         this.jwtService = jwtService;
     }
     buildToken(user) {
@@ -75,6 +84,11 @@ let AuthService = class AuthService {
             level: user.level,
             points: user.points,
             streak: user.streak,
+            codename: user.codename ?? null,
+            avatarBase: user.avatarBase ?? "A",
+            avatarColor: user.avatarColor ?? "#22D3EE",
+            avatarGear: user.avatarGear ?? "none",
+            onboardingDone: user.onboardingDone ?? false,
         };
     }
     async login(loginDto) {
@@ -113,12 +127,36 @@ let AuthService = class AuthService {
         await this.userRepository.save(user);
         return { accessToken: this.buildToken(user), user: this.safeUser(user) };
     }
+    async deleteMe(userId) {
+        const user = await this.userRepository.findOneBy({ id: userId });
+        if (!user)
+            throw new common_1.UnauthorizedException("Korisnik nije pronađen.");
+        await this.progressRepository
+            .createQueryBuilder()
+            .delete()
+            .where("userId = :userId", { userId })
+            .execute();
+        await this.userBadgeRepository
+            .createQueryBuilder()
+            .delete()
+            .where("userId = :userId", { userId })
+            .execute();
+        await this.resultRepository.delete({ userId });
+        await this.userRepository.delete({ id: userId });
+        return { deleted: true };
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(1, (0, typeorm_1.InjectRepository)(result_entity_1.Result)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_badge_entity_1.UserBadge)),
+    __param(3, (0, typeorm_1.InjectRepository)(user_quest_progress_entity_1.UserQuestProgress)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

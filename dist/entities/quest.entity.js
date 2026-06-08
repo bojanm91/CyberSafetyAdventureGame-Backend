@@ -28,6 +28,11 @@ let Quest = class Quest {
     questType;
     orderInDiscipline;
     isActive;
+    interactionType;
+    gameData;
+    correctData;
+    objasnjenje;
+    xp;
     options;
     progress;
 };
@@ -84,6 +89,26 @@ __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
 ], Quest.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "varchar", length: 30, nullable: true }),
+    __metadata("design:type", Object)
+], Quest.prototype, "interactionType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "json", nullable: true }),
+    __metadata("design:type", Object)
+], Quest.prototype, "gameData", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "json", nullable: true }),
+    __metadata("design:type", Object)
+], Quest.prototype, "correctData", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", Object)
+], Quest.prototype, "objasnjenje", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], Quest.prototype, "xp", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => quest_option_entity_1.QuestOption, (o) => o.quest, { eager: true }),
     __metadata("design:type", Array)

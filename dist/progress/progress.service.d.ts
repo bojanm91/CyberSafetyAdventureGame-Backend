@@ -3,12 +3,14 @@ import { User } from "../entities/user.entity";
 import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { UserBadge } from "../entities/user-badge.entity";
 import { Quest } from "../entities/quest.entity";
+import { Result } from "../entities/result.entity";
 export declare class ProgressService {
     private readonly userRepo;
     private readonly progressRepo;
     private readonly userBadgeRepo;
     private readonly questRepo;
-    constructor(userRepo: Repository<User>, progressRepo: Repository<UserQuestProgress>, userBadgeRepo: Repository<UserBadge>, questRepo: Repository<Quest>);
+    private readonly resultRepo;
+    constructor(userRepo: Repository<User>, progressRepo: Repository<UserQuestProgress>, userBadgeRepo: Repository<UserBadge>, questRepo: Repository<Quest>, resultRepo: Repository<Result>);
     getMe(userId: string): Promise<{
         profile: {
             id: string;

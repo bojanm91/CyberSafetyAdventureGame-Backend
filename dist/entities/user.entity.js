@@ -23,6 +23,11 @@ let User = class User {
     points;
     streak;
     lastActivity;
+    codename;
+    avatarBase;
+    avatarColor;
+    avatarGear;
+    onboardingDone;
     createdAt;
     questProgress;
     userBadges;
@@ -64,6 +69,26 @@ __decorate([
     (0, typeorm_1.Column)({ type: "date", nullable: true }),
     __metadata("design:type", Object)
 ], User.prototype, "lastActivity", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "varchar", length: 50, nullable: true }),
+    __metadata("design:type", Object)
+], User.prototype, "codename", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "varchar", length: 5, nullable: true, default: "A" }),
+    __metadata("design:type", Object)
+], User.prototype, "avatarBase", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "varchar", length: 20, nullable: true, default: "#22D3EE" }),
+    __metadata("design:type", Object)
+], User.prototype, "avatarColor", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "varchar", length: 20, nullable: true, default: "none" }),
+    __metadata("design:type", Object)
+], User.prototype, "avatarGear", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "onboardingDone", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

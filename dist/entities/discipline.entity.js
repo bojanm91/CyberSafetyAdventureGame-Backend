@@ -19,6 +19,7 @@ let Discipline = class Discipline {
     description;
     icon;
     colorClass;
+    lekcija;
     order;
     quests;
 };
@@ -47,6 +48,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Discipline.prototype, "colorClass", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", Object)
+], Discipline.prototype, "lekcija", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)

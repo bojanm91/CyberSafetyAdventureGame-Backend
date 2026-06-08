@@ -12,5 +12,7 @@ export declare class SeedService implements OnApplicationBootstrap {
     private readonly logger;
     constructor(disciplineRepo: Repository<Discipline>, questRepo: Repository<Quest>, optionRepo: Repository<QuestOption>, badgeRepo: Repository<Badge>);
     onApplicationBootstrap(): Promise<void>;
-    private seed;
+    private seedLegacy;
+    private seedGameTopics;
+    private seedAllBadges;
 }

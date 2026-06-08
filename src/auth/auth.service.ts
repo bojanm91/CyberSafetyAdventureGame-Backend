@@ -8,6 +8,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import { User } from "../entities/user.entity";
+import { Result } from "../entities/result.entity";
+import { UserBadge } from "../entities/user-badge.entity";
+import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 
@@ -16,6 +19,12 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Result)
+    private readonly resultRepository: Repository<Result>,
+    @InjectRepository(UserBadge)
+    private readonly userBadgeRepository: Repository<UserBadge>,
+    @InjectRepository(UserQuestProgress)
+    private readonly progressRepository: Repository<UserQuestProgress>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -83,5 +92,25 @@ export class AuthService {
 
     await this.userRepository.save(user);
     return { accessToken: this.buildToken(user), user: this.safeUser(user) };
+  }
+
+  async deleteMe(userId: string) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) throw new UnauthorizedException("Korisnik nije pronađen.");
+
+    await this.progressRepository
+      .createQueryBuilder()
+      .delete()
+      .where("userId = :userId", { userId })
+      .execute();
+    await this.userBadgeRepository
+      .createQueryBuilder()
+      .delete()
+      .where("userId = :userId", { userId })
+      .execute();
+    await this.resultRepository.delete({ userId });
+    await this.userRepository.delete({ id: userId });
+
+    return { deleted: true };
   }
 }

@@ -10,6 +10,11 @@ export declare class User {
     points: number;
     streak: number;
     lastActivity: string | null;
+    codename: string | null;
+    avatarBase: string | null;
+    avatarColor: string | null;
+    avatarGear: string | null;
+    onboardingDone: boolean;
     createdAt: Date;
     questProgress: UserQuestProgress[];
     userBadges: UserBadge[];

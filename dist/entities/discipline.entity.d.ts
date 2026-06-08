@@ -6,6 +6,7 @@ export declare class Discipline {
     description: string;
     icon: string;
     colorClass: string;
+    lekcija: string | null;
     order: number;
     quests: Quest[];
 }

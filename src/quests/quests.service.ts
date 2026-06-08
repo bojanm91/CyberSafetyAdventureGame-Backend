@@ -71,10 +71,11 @@ export class QuestsService {
       }));
     }
 
-    const progressRecords = await this.progressRepo.find({
+    const rawProgressRecords = await this.progressRepo.find({
       where: { user: { id: userId } },
       relations: ["quest"],
     });
+    const progressRecords = rawProgressRecords.filter((p) => p.score > 0);
 
     const completedQuestIds = new Set(progressRecords.map((p) => p.quest.id));
     const progressByQuestId = new Map(progressRecords.map((p) => [p.quest.id, p]));
@@ -199,29 +200,23 @@ export class QuestsService {
     const existingProgress = await this.progressRepo.findOne({
       where: { user: { id: userId }, quest: { id: dto.questId } },
     });
+    const hasCompletedProgress = !!existingProgress && existingProgress.score > 0;
 
-    if (!existingProgress) {
+    if (!hasCompletedProgress && isCorrect) {
       const status = isCorrect && !usedHint && score === quest.basePoints + 25
         ? "mastered"
-        : isCorrect
-          ? "completed"
-          : "completed";
+        : "completed";
 
-      const progress = this.progressRepo.create({
-        user,
-        quest,
-        status,
-        score,
-        usedHint,
-        firstTry: true,
-      });
+      const progress = existingProgress ?? this.progressRepo.create({ user, quest });
+      progress.status = status;
+      progress.score = score;
+      progress.usedHint = usedHint;
+      progress.firstTry = true;
       await this.progressRepo.save(progress);
 
-      if (isCorrect) {
-        user.points += score;
-        user.level = computeLevel(user.points);
-        user.status = computeStatus(user.level);
-      }
+      user.points += score;
+      user.level = computeLevel(user.points);
+      user.status = computeStatus(user.level);
 
       const today = new Date().toISOString().slice(0, 10);
       if (user.lastActivity) {
@@ -269,10 +264,10 @@ export class QuestsService {
     );
 
     const allBadges = await this.badgeRepo.find();
-    const allProgress = await this.progressRepo.find({
+    const allProgress = (await this.progressRepo.find({
       where: { user: { id: user.id } },
       relations: ["quest", "quest.discipline"],
-    });
+    })).filter((p) => p.score > 0);
 
     for (const badge of allBadges) {
       if (existingBadgeSlugs.has(badge.slug)) continue;

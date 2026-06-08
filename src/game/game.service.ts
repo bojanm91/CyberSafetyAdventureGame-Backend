@@ -6,6 +6,7 @@ import { User } from "../entities/user.entity";
 import { Result } from "../entities/result.entity";
 import { Badge } from "../entities/badge.entity";
 import { UserBadge } from "../entities/user-badge.entity";
+import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { SubmitResultDto } from "./dto/submit-result.dto";
 import { UpdateAvatarDto } from "./dto/update-avatar.dto";
 
@@ -63,6 +64,8 @@ export class GameService {
     private readonly badgeRepo: Repository<Badge>,
     @InjectRepository(UserBadge)
     private readonly userBadgeRepo: Repository<UserBadge>,
+    @InjectRepository(UserQuestProgress)
+    private readonly progressRepo: Repository<UserQuestProgress>,
   ) {}
 
   async getTopics() {
@@ -98,8 +101,14 @@ export class GameService {
 
     let doneIds = new Set<string>();
     if (userId) {
-      const results = await this.resultRepo.find({ where: { userId } });
-      doneIds = new Set(results.filter((r) => r.correct && r.questId).map((r) => r.questId!));
+      const [results, progress] = await Promise.all([
+        this.resultRepo.find({ where: { userId, correct: true } }),
+        this.progressRepo.find({ where: { user: { id: userId } }, relations: ["quest"] }),
+      ]);
+      doneIds = new Set([
+        ...results.filter((r) => r.questId).map((r) => r.questId!),
+        ...progress.filter((p) => p.score > 0).map((p) => p.quest.id),
+      ]);
     }
 
     return gameQuests.map((q) => ({
@@ -150,15 +159,19 @@ export class GameService {
       relations: ["discipline"],
     });
 
-    const existing = await this.resultRepo.findOne({
-      where: { userId, questId: dto.questId },
+    const existingCorrectResult = await this.resultRepo.findOne({
+      where: { userId, questId: dto.questId, correct: true },
     });
+    const existingProgress = await this.progressRepo.findOne({
+      where: { user: { id: userId }, quest: { id: dto.questId } },
+    });
+    const hasCompletedProgress = !!existingProgress && existingProgress.score > 0;
 
     let xpEarned = 0;
     let leveledUp = false;
     const prevLevel = computeLevel(user.points);
 
-    if (!existing && dto.correct) {
+    if (!existingCorrectResult && !hasCompletedProgress && dto.correct) {
       xpEarned = dto.xpEarned;
       user.points += xpEarned;
 
@@ -191,6 +204,15 @@ export class GameService {
       timeMs: dto.timeMs ?? null,
     });
     await this.resultRepo.save(result);
+
+    if (!hasCompletedProgress && quest && dto.correct) {
+      const progress = existingProgress ?? this.progressRepo.create({ user, quest });
+      progress.status = "completed";
+      progress.score = xpEarned;
+      progress.usedHint = false;
+      progress.firstTry = !existingCorrectResult;
+      await this.progressRepo.save(progress);
+    }
 
     const earnedBadges = await this.checkBadges(user, dto, quest?.discipline?.slug);
 
@@ -369,5 +391,72 @@ export class GameService {
     }
 
     return Object.entries(history).map(([date, xp]) => ({ date, xp }));
+  }
+
+  // ── Bajt: zanimljiva činjenica/savjet (Hugging Face LLM + fallback) ──────────
+
+  private static readonly BYTE_FALLBACK_FACTS = [
+    "Lozinka od 12 nasumičnih znakova je milionima puta teža za provaljivanje od one sa 8 znakova. Dužina je važnija od simbola!",
+    "Dvofaktorska autentifikacija zaustavlja preko 99% automatskih napada na naloge — uključi je svuda gdje možeš.",
+    "Phishing poruke najčešće stvaraju osjećaj hitnosti ('reaguj odmah!'). Kad te neko žuri — to je znak da staneš i provjeriš.",
+    "Javni Wi-Fi bez lozinke može svako da prisluškuje. Koristi VPN ili mobilni internet za prijave na bitne naloge.",
+    "Iste lozinke na više sajtova = ako procuri jedna, svi padaju. Menadžer lozinki pamti jedinstvene umjesto tebe.",
+    "Ažuriranja nisu dosadna — ona krpe rupe kroz koje virusi ulaze. Odlaganje ažuriranja je kao da ostaviš vrata otključana.",
+    "Prije nego klikneš na link, zadrži prst (ili kursor) na njemu da vidiš pravu adresu. Lažni sajtovi često imaju sitnu grešku u imenu.",
+    "Banke i institucije nikad ne traže lozinku ili PIN preko poruke ili mejla. Ako to traže — to je prevara.",
+    "Zaključavanje telefona PIN-om ili otiskom štiti sve tvoje naloge ako ga izgubiš. Mali korak, velika razlika.",
+    "Backup bitnih podataka znači da te ransomware (ucjenjivački virus) ne može uceniti — samo vratiš svoju kopiju.",
+  ];
+
+  private pickFallbackFact(): { fact: string; source: "fallback" } {
+    const list = GameService.BYTE_FALLBACK_FACTS;
+    return { fact: list[Math.floor(Math.random() * list.length)], source: "fallback" };
+  }
+
+  async getByteFact(): Promise<{ fact: string; source: "ai" | "fallback" }> {
+    const apiKey = process.env.HUGGINGFACE_API_KEY;
+    if (!apiKey) return this.pickFallbackFact();
+
+    const model = process.env.HF_MODEL ?? "meta-llama/Llama-3.1-8B-Instruct";
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+      const res = await fetch("https://router.huggingface.co/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "system",
+              content:
+                "Ti si Bajt, prijateljski robot-čuvar koji uči mlade o sajber bezbjednosti. " +
+                "Daj TAČNO jednu kratku, zanimljivu i tačnu činjenicu ili praktičan savjet o sajber " +
+                "bezbjednosti, na srpskom jeziku (ijekavica), najviše dvije rečenice. Budi vedar i " +
+                "konkretan. Bez uvoda, bez emodžija, vrati samo činjenicu.",
+            },
+            { role: "user", content: "Daj mi jednu zanimljivu činjenicu o sajber bezbjednosti." },
+          ],
+          max_tokens: 120,
+          temperature: 0.9,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) return this.pickFallbackFact();
+      const data: any = await res.json();
+      const text: string | undefined = data?.choices?.[0]?.message?.content?.trim();
+      if (!text) return this.pickFallbackFact();
+      // Skini eventualne navodnike i suvišan razmak.
+      const fact = text.replace(/^["'\s]+|["'\s]+$/g, "");
+      return { fact, source: "ai" };
+    } catch {
+      return this.pickFallbackFact();
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 }

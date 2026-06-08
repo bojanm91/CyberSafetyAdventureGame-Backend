@@ -35,16 +35,19 @@ let SeedService = SeedService_1 = class SeedService {
         this.badgeRepo = badgeRepo;
     }
     async onApplicationBootstrap() {
-        const count = await this.disciplineRepo.count();
-        if (count > 0) {
-            this.logger.log("Baza već sadrži podatke - seed se preskače.");
-            return;
+        const disciplineCount = await this.disciplineRepo.count();
+        if (disciplineCount === 0) {
+            this.logger.log("Pokretanje seed-a (stari quests)...");
+            await this.seedLegacy();
+            this.logger.log("Legacy seed završen.");
         }
-        this.logger.log("Pokretanje seed-a...");
-        await this.seed();
-        this.logger.log("Seed završen.");
+        else {
+            this.logger.log("Legacy podaci već postoje - preskačem.");
+        }
+        await this.seedGameTopics();
+        await this.seedAllBadges();
     }
-    async seed() {
+    async seedLegacy() {
         const disciplineMap = new Map();
         for (const d of seed_data_1.DISCIPLINES_DATA) {
             const disc = this.disciplineRepo.create(d);
@@ -71,19 +74,64 @@ let SeedService = SeedService_1 = class SeedService {
             });
             const savedQuest = await this.questRepo.save(quest);
             for (const opt of q.options) {
-                const option = this.optionRepo.create({
-                    quest: savedQuest,
-                    text: opt.text,
-                    isCorrect: opt.isCorrect,
-                    explanation: opt.explanation,
-                    order: opt.order,
-                });
-                await this.optionRepo.save(option);
+                await this.optionRepo.save(this.optionRepo.create({ quest: savedQuest, ...opt }));
             }
         }
-        for (const b of seed_data_1.BADGES_DATA) {
-            const badge = this.badgeRepo.create(b);
-            await this.badgeRepo.save(badge);
+    }
+    async seedGameTopics() {
+        for (const topicData of seed_data_1.GAME_TOPICS_DATA) {
+            let discipline = await this.disciplineRepo.findOneBy({ slug: topicData.slug });
+            if (!discipline) {
+                discipline = await this.disciplineRepo.save(this.disciplineRepo.create({
+                    slug: topicData.slug,
+                    name: topicData.name,
+                    description: topicData.opis,
+                    icon: topicData.ikona,
+                    colorClass: topicData.colorClass,
+                    order: topicData.order,
+                    lekcija: topicData.lekcija,
+                }));
+                this.logger.log(`Kreirana disciplina: ${topicData.slug}`);
+            }
+            else if (!discipline.lekcija) {
+                discipline.lekcija = topicData.lekcija;
+                await this.disciplineRepo.save(discipline);
+            }
+            const scenarios = seed_data_1.SCENARIOS_DATA.filter((s) => s.topicSlug === topicData.slug);
+            for (const s of scenarios) {
+                const existing = await this.questRepo.findOneBy({ title: s.title, interactionType: s.interactionType });
+                if (existing)
+                    continue;
+                await this.questRepo.save(this.questRepo.create({
+                    discipline,
+                    title: s.title,
+                    difficulty: s.difficulty,
+                    basePoints: s.xp,
+                    xp: s.xp,
+                    questType: "multiple_choice",
+                    orderInDiscipline: s.order,
+                    scenario: s.tekst,
+                    taskText: s.tekst,
+                    hintText: s.hint ?? "",
+                    feedbackCorrect: s.objasnjenje,
+                    miniConclusion: s.objasnjenje.slice(0, 120),
+                    interactionType: s.interactionType,
+                    gameData: s.gameData,
+                    correctData: s.correctData,
+                    objasnjenje: s.objasnjenje,
+                    isActive: true,
+                }));
+                this.logger.log(`Kreiran scenario: ${s.title}`);
+            }
+        }
+    }
+    async seedAllBadges() {
+        const allBadgeSlugs = [...seed_data_1.BADGES_DATA, ...seed_data_1.GAME_BADGES_DATA];
+        for (const b of allBadgeSlugs) {
+            const exists = await this.badgeRepo.findOneBy({ slug: b.slug });
+            if (!exists) {
+                await this.badgeRepo.save(this.badgeRepo.create(b));
+            }
         }
     }
 };

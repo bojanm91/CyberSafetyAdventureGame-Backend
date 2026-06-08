@@ -13,6 +13,9 @@ const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../entities/user.entity");
+const result_entity_1 = require("../entities/result.entity");
+const user_badge_entity_1 = require("../entities/user-badge.entity");
+const user_quest_progress_entity_1 = require("../entities/user-quest-progress.entity");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
 const jwt_strategy_1 = require("./jwt.strategy");
@@ -31,7 +34,7 @@ exports.AuthModule = AuthModule = __decorate([
                     signOptions: { expiresIn: "7d" },
                 }),
             }),
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, result_entity_1.Result, user_badge_entity_1.UserBadge, user_quest_progress_entity_1.UserQuestProgress]),
         ],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],

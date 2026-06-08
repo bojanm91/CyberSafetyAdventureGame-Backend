@@ -20,23 +20,31 @@ const user_entity_1 = require("../entities/user.entity");
 const user_quest_progress_entity_1 = require("../entities/user-quest-progress.entity");
 const user_badge_entity_1 = require("../entities/user-badge.entity");
 const quest_entity_1 = require("../entities/quest.entity");
+const result_entity_1 = require("../entities/result.entity");
 let ProgressService = class ProgressService {
     userRepo;
     progressRepo;
     userBadgeRepo;
     questRepo;
-    constructor(userRepo, progressRepo, userBadgeRepo, questRepo) {
+    resultRepo;
+    constructor(userRepo, progressRepo, userBadgeRepo, questRepo, resultRepo) {
         this.userRepo = userRepo;
         this.progressRepo = progressRepo;
         this.userBadgeRepo = userBadgeRepo;
         this.questRepo = questRepo;
+        this.resultRepo = resultRepo;
     }
     async getMe(userId) {
         const user = await this.userRepo.findOneBy({ id: userId });
         if (!user)
             throw new common_1.NotFoundException("Korisnik nije pronađen.");
-        const progressRecords = await this.progressRepo.find({
+        const rawProgressRecords = await this.progressRepo.find({
             where: { user: { id: userId } },
+            relations: ["quest", "quest.discipline"],
+        });
+        const progressRecords = rawProgressRecords.filter((p) => p.score > 0);
+        const resultRecords = await this.resultRepo.find({
+            where: { userId, correct: true },
             relations: ["quest", "quest.discipline"],
         });
         const userBadges = await this.userBadgeRepo.find({
@@ -44,10 +52,29 @@ let ProgressService = class ProgressService {
             relations: ["badge"],
             order: { earnedAt: "DESC" },
         });
-        const totalQuests = await this.questRepo.count({ where: { isActive: true } });
-        const completedQuests = progressRecords.length;
+        const activeQuests = (await this.questRepo.find({
+            where: { isActive: true },
+            relations: ["discipline"],
+        })).filter((q) => q.interactionType != null);
+        const activeQuestIds = new Set(activeQuests.map((q) => q.id));
+        const totalQuests = activeQuests.length;
+        const completedQuestIds = new Set(progressRecords.map((p) => p.quest.id).filter((id) => activeQuestIds.has(id)));
+        for (const r of resultRecords) {
+            if (r.questId && activeQuestIds.has(r.questId))
+                completedQuestIds.add(r.questId);
+        }
+        const completedQuests = completedQuestIds.size;
         const disciplineStats = {};
+        for (const q of activeQuests) {
+            const slug = q.discipline?.slug ?? "unknown";
+            if (!disciplineStats[slug]) {
+                disciplineStats[slug] = { total: 0, completed: 0, points: 0 };
+            }
+            disciplineStats[slug].total += 1;
+        }
         for (const p of progressRecords) {
+            if (!activeQuestIds.has(p.quest.id))
+                continue;
             const slug = p.quest?.discipline?.slug ?? "unknown";
             if (!disciplineStats[slug]) {
                 disciplineStats[slug] = { total: 0, completed: 0, points: 0 };
@@ -55,10 +82,27 @@ let ProgressService = class ProgressService {
             disciplineStats[slug].completed += 1;
             disciplineStats[slug].points += p.score;
         }
+        const progressQuestIds = new Set(progressRecords.map((p) => p.quest.id));
+        const countedResultQuestIds = new Set();
+        for (const r of resultRecords) {
+            if (!r.quest ||
+                !r.questId ||
+                !activeQuestIds.has(r.questId) ||
+                progressQuestIds.has(r.questId) ||
+                countedResultQuestIds.has(r.questId))
+                continue;
+            countedResultQuestIds.add(r.questId);
+            const slug = r.quest.discipline?.slug ?? r.disciplineSlug ?? "unknown";
+            if (!disciplineStats[slug]) {
+                disciplineStats[slug] = { total: 0, completed: 0, points: 0 };
+            }
+            disciplineStats[slug].completed += 1;
+            disciplineStats[slug].points += r.xpEarned;
+        }
         const xpPerLevel = 500;
         const xpInCurrentLevel = user.points % xpPerLevel;
         const xpPercentage = Math.round((xpInCurrentLevel / xpPerLevel) * 100);
-        const nextRecommended = await this.findNextRecommended(userId, progressRecords);
+        const nextRecommended = await this.findNextRecommended(completedQuestIds);
         return {
             profile: {
                 id: user.id,
@@ -87,13 +131,12 @@ let ProgressService = class ProgressService {
             nextRecommended,
         };
     }
-    async findNextRecommended(userId, progressRecords) {
-        const completedIds = new Set(progressRecords.map((p) => p.quest.id));
-        const allQuests = await this.questRepo.find({
+    async findNextRecommended(completedIds) {
+        const allQuests = (await this.questRepo.find({
             where: { isActive: true },
             relations: ["discipline"],
             order: { discipline: { order: "ASC" }, orderInDiscipline: "ASC" },
-        });
+        })).filter((q) => q.interactionType != null);
         for (const q of allQuests) {
             if (!completedIds.has(q.id)) {
                 if (q.orderInDiscipline === 1) {
@@ -116,7 +159,9 @@ exports.ProgressService = ProgressService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(user_quest_progress_entity_1.UserQuestProgress)),
     __param(2, (0, typeorm_1.InjectRepository)(user_badge_entity_1.UserBadge)),
     __param(3, (0, typeorm_1.InjectRepository)(quest_entity_1.Quest)),
+    __param(4, (0, typeorm_1.InjectRepository)(result_entity_1.Result)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])
