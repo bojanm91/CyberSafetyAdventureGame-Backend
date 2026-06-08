@@ -10,6 +10,7 @@ import { HealthModule } from "./health/health.module";
 import { QuestsModule } from "./quests/quests.module";
 import { SeedModule } from "./seed/seed.module";
 import { GameModule } from "./game/game.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 import { User } from "./entities/user.entity";
 import { Discipline } from "./entities/discipline.entity";
 import { Quest } from "./entities/quest.entity";
@@ -17,6 +18,7 @@ import { QuestOption } from "./entities/quest-option.entity";
 import { UserQuestProgress } from "./entities/user-quest-progress.entity";
 import { Badge } from "./entities/badge.entity";
 import { UserBadge } from "./entities/user-badge.entity";
+import { PushToken } from "./entities/push-token.entity";
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { UserBadge } from "./entities/user-badge.entity";
     TypeOrmModule.forRoot({
       type: "mysql",
       url: process.env.DATABASE_URL,
-      entities: [User, Discipline, Quest, QuestOption, UserQuestProgress, Badge, UserBadge],
+      entities: [User, Discipline, Quest, QuestOption, UserQuestProgress, Badge, UserBadge, PushToken],
       synchronize: true,
     }),
     HealthModule,
@@ -34,6 +36,7 @@ import { UserBadge } from "./entities/user-badge.entity";
     QuestsModule,
     SeedModule,
     GameModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
