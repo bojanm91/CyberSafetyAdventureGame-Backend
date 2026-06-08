@@ -13,7 +13,6 @@ const user_entity_1 = require("../entities/user.entity");
 const user_quest_progress_entity_1 = require("../entities/user-quest-progress.entity");
 const user_badge_entity_1 = require("../entities/user-badge.entity");
 const quest_entity_1 = require("../entities/quest.entity");
-const result_entity_1 = require("../entities/result.entity");
 const progress_controller_1 = require("./progress.controller");
 const progress_service_1 = require("./progress.service");
 let ProgressModule = class ProgressModule {
@@ -21,7 +20,7 @@ let ProgressModule = class ProgressModule {
 exports.ProgressModule = ProgressModule;
 exports.ProgressModule = ProgressModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, user_quest_progress_entity_1.UserQuestProgress, user_badge_entity_1.UserBadge, quest_entity_1.Quest, result_entity_1.Result])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, user_quest_progress_entity_1.UserQuestProgress, user_badge_entity_1.UserBadge, quest_entity_1.Quest])],
         controllers: [progress_controller_1.ProgressController],
         providers: [progress_service_1.ProgressService],
     })

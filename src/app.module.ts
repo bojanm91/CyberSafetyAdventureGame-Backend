@@ -17,7 +17,6 @@ import { QuestOption } from "./entities/quest-option.entity";
 import { UserQuestProgress } from "./entities/user-quest-progress.entity";
 import { Badge } from "./entities/badge.entity";
 import { UserBadge } from "./entities/user-badge.entity";
-import { Result } from "./entities/result.entity";
 
 @Module({
   imports: [
@@ -25,7 +24,7 @@ import { Result } from "./entities/result.entity";
     TypeOrmModule.forRoot({
       type: "mysql",
       url: process.env.DATABASE_URL,
-      entities: [User, Discipline, Quest, QuestOption, UserQuestProgress, Badge, UserBadge, Result],
+      entities: [User, Discipline, Quest, QuestOption, UserQuestProgress, Badge, UserBadge],
       synchronize: true,
     }),
     HealthModule,

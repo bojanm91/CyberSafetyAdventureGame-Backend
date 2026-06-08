@@ -1,16 +1,15 @@
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { UserBadge } from "../entities/user-badge.entity";
 import { Quest } from "../entities/quest.entity";
-import { Result } from "../entities/result.entity";
 export declare class ProgressService {
     private readonly userRepo;
     private readonly progressRepo;
     private readonly userBadgeRepo;
     private readonly questRepo;
-    private readonly resultRepo;
-    constructor(userRepo: Repository<User>, progressRepo: Repository<UserQuestProgress>, userBadgeRepo: Repository<UserBadge>, questRepo: Repository<Quest>, resultRepo: Repository<Result>);
+    private readonly dataSource;
+    constructor(userRepo: Repository<User>, progressRepo: Repository<UserQuestProgress>, userBadgeRepo: Repository<UserBadge>, questRepo: Repository<Quest>, dataSource: DataSource);
     getMe(userId: string): Promise<{
         profile: {
             id: string;

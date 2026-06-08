@@ -26,7 +26,6 @@ const quest_option_entity_1 = require("./entities/quest-option.entity");
 const user_quest_progress_entity_1 = require("./entities/user-quest-progress.entity");
 const badge_entity_1 = require("./entities/badge.entity");
 const user_badge_entity_1 = require("./entities/user-badge.entity");
-const result_entity_1 = require("./entities/result.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -37,7 +36,7 @@ exports.AppModule = AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRoot({
                 type: "mysql",
                 url: process.env.DATABASE_URL,
-                entities: [user_entity_1.User, discipline_entity_1.Discipline, quest_entity_1.Quest, quest_option_entity_1.QuestOption, user_quest_progress_entity_1.UserQuestProgress, badge_entity_1.Badge, user_badge_entity_1.UserBadge, result_entity_1.Result],
+                entities: [user_entity_1.User, discipline_entity_1.Discipline, quest_entity_1.Quest, quest_option_entity_1.QuestOption, user_quest_progress_entity_1.UserQuestProgress, badge_entity_1.Badge, user_badge_entity_1.UserBadge],
                 synchronize: true,
             }),
             health_module_1.HealthModule,

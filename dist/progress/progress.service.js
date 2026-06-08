@@ -20,19 +20,36 @@ const user_entity_1 = require("../entities/user.entity");
 const user_quest_progress_entity_1 = require("../entities/user-quest-progress.entity");
 const user_badge_entity_1 = require("../entities/user-badge.entity");
 const quest_entity_1 = require("../entities/quest.entity");
-const result_entity_1 = require("../entities/result.entity");
+async function ensureResultsTable(db) {
+    await db.query(`
+    CREATE TABLE IF NOT EXISTS results (
+      id varchar(36) NOT NULL,
+      userId varchar(36) NOT NULL,
+      questId varchar(36) NULL,
+      disciplineSlug varchar(50) NULL,
+      correct tinyint(1) NOT NULL,
+      xpEarned int NOT NULL DEFAULT 0,
+      timeMs int NULL,
+      createdAt datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+      PRIMARY KEY (id),
+      INDEX IDX_results_userId (userId),
+      INDEX IDX_results_questId (questId),
+      INDEX IDX_results_user_correct (userId, correct)
+    ) ENGINE=InnoDB
+  `);
+}
 let ProgressService = class ProgressService {
     userRepo;
     progressRepo;
     userBadgeRepo;
     questRepo;
-    resultRepo;
-    constructor(userRepo, progressRepo, userBadgeRepo, questRepo, resultRepo) {
+    dataSource;
+    constructor(userRepo, progressRepo, userBadgeRepo, questRepo, dataSource) {
         this.userRepo = userRepo;
         this.progressRepo = progressRepo;
         this.userBadgeRepo = userBadgeRepo;
         this.questRepo = questRepo;
-        this.resultRepo = resultRepo;
+        this.dataSource = dataSource;
     }
     async getMe(userId) {
         const user = await this.userRepo.findOneBy({ id: userId });
@@ -43,10 +60,8 @@ let ProgressService = class ProgressService {
             relations: ["quest", "quest.discipline"],
         });
         const progressRecords = rawProgressRecords.filter((p) => p.score > 0);
-        const resultRecords = await this.resultRepo.find({
-            where: { userId, correct: true },
-            relations: ["quest", "quest.discipline"],
-        });
+        await ensureResultsTable(this.dataSource);
+        const resultRecords = await this.dataSource.query("SELECT questId, disciplineSlug, xpEarned FROM results WHERE userId = ? AND correct = 1", [userId]);
         const userBadges = await this.userBadgeRepo.find({
             where: { user: { id: userId } },
             relations: ["badge"],
@@ -57,6 +72,7 @@ let ProgressService = class ProgressService {
             relations: ["discipline"],
         })).filter((q) => q.interactionType != null);
         const activeQuestIds = new Set(activeQuests.map((q) => q.id));
+        const activeQuestSlugs = new Map(activeQuests.map((q) => [q.id, q.discipline?.slug ?? "unknown"]));
         const totalQuests = activeQuests.length;
         const completedQuestIds = new Set(progressRecords.map((p) => p.quest.id).filter((id) => activeQuestIds.has(id)));
         for (const r of resultRecords) {
@@ -85,14 +101,11 @@ let ProgressService = class ProgressService {
         const progressQuestIds = new Set(progressRecords.map((p) => p.quest.id));
         const countedResultQuestIds = new Set();
         for (const r of resultRecords) {
-            if (!r.quest ||
-                !r.questId ||
-                !activeQuestIds.has(r.questId) ||
-                progressQuestIds.has(r.questId) ||
-                countedResultQuestIds.has(r.questId))
+            if (!r.questId || !activeQuestIds.has(r.questId) || progressQuestIds.has(r.questId) || countedResultQuestIds.has(r.questId)) {
                 continue;
+            }
             countedResultQuestIds.add(r.questId);
-            const slug = r.quest.discipline?.slug ?? r.disciplineSlug ?? "unknown";
+            const slug = activeQuestSlugs.get(r.questId) ?? r.disciplineSlug ?? "unknown";
             if (!disciplineStats[slug]) {
                 disciplineStats[slug] = { total: 0, completed: 0, points: 0 };
             }
@@ -159,11 +172,10 @@ exports.ProgressService = ProgressService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(user_quest_progress_entity_1.UserQuestProgress)),
     __param(2, (0, typeorm_1.InjectRepository)(user_badge_entity_1.UserBadge)),
     __param(3, (0, typeorm_1.InjectRepository)(quest_entity_1.Quest)),
-    __param(4, (0, typeorm_1.InjectRepository)(result_entity_1.Result)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.DataSource])
 ], ProgressService);
 //# sourceMappingURL=progress.service.js.map

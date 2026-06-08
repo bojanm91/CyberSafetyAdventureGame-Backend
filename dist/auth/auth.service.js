@@ -52,6 +52,24 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const bcrypt = __importStar(require("bcryptjs"));
 const user_entity_1 = require("../entities/user.entity");
+async function ensureResultsTable(db) {
+    await db.query(`
+    CREATE TABLE IF NOT EXISTS results (
+      id varchar(36) NOT NULL,
+      userId varchar(36) NOT NULL,
+      questId varchar(36) NULL,
+      disciplineSlug varchar(50) NULL,
+      correct tinyint(1) NOT NULL,
+      xpEarned int NOT NULL DEFAULT 0,
+      timeMs int NULL,
+      createdAt datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+      PRIMARY KEY (id),
+      INDEX IDX_results_userId (userId),
+      INDEX IDX_results_questId (questId),
+      INDEX IDX_results_user_correct (userId, correct)
+    ) ENGINE=InnoDB
+  `);
+}
 let AuthService = class AuthService {
     userRepository;
     jwtService;
@@ -125,6 +143,7 @@ let AuthService = class AuthService {
         if (!user)
             throw new common_1.UnauthorizedException("Korisnik nije pronađen.");
         await this.dataSource.transaction(async (manager) => {
+            await ensureResultsTable(manager);
             await manager.query("DELETE FROM user_quest_progress WHERE userId = ?", [userId]);
             await manager.query("DELETE FROM user_badges WHERE userId = ?", [userId]);
             await manager.query("DELETE FROM results WHERE userId = ?", [userId]);

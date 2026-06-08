@@ -1,14 +1,46 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, MoreThanOrEqual } from "typeorm";
+import { randomUUID } from "crypto";
+import { DataSource, Repository } from "typeorm";
 import { Quest } from "../entities/quest.entity";
 import { User } from "../entities/user.entity";
-import { Result } from "../entities/result.entity";
 import { Badge } from "../entities/badge.entity";
 import { UserBadge } from "../entities/user-badge.entity";
 import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { SubmitResultDto } from "./dto/submit-result.dto";
 import { UpdateAvatarDto } from "./dto/update-avatar.dto";
+
+type ResultRow = {
+  id?: string;
+  questId: string | null;
+  disciplineSlug: string | null;
+  correct: boolean | number | string;
+  xpEarned: number;
+  createdAt?: Date | string;
+};
+
+function isCorrect(value: ResultRow["correct"]) {
+  return value === true || value === 1 || value === "1";
+}
+
+async function ensureResultsTable(db: DataSource) {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS results (
+      id varchar(36) NOT NULL,
+      userId varchar(36) NOT NULL,
+      questId varchar(36) NULL,
+      disciplineSlug varchar(50) NULL,
+      correct tinyint(1) NOT NULL,
+      xpEarned int NOT NULL DEFAULT 0,
+      timeMs int NULL,
+      createdAt datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+      PRIMARY KEY (id),
+      INDEX IDX_results_userId (userId),
+      INDEX IDX_results_questId (questId),
+      INDEX IDX_results_user_correct (userId, correct)
+    ) ENGINE=InnoDB
+  `);
+}
 
 const RANK_TIERS = [
   { min: 1, max: 2, rank: "Pripravnik" },
@@ -58,14 +90,13 @@ export class GameService {
     private readonly questRepo: Repository<Quest>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    @InjectRepository(Result)
-    private readonly resultRepo: Repository<Result>,
     @InjectRepository(Badge)
     private readonly badgeRepo: Repository<Badge>,
     @InjectRepository(UserBadge)
     private readonly userBadgeRepo: Repository<UserBadge>,
     @InjectRepository(UserQuestProgress)
     private readonly progressRepo: Repository<UserQuestProgress>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getTopics() {
@@ -101,12 +132,16 @@ export class GameService {
 
     let doneIds = new Set<string>();
     if (userId) {
+      await ensureResultsTable(this.dataSource);
       const [results, progress] = await Promise.all([
-        this.resultRepo.find({ where: { userId, correct: true } }),
+        this.dataSource.query<Array<{ questId: string | null }>>(
+          "SELECT questId FROM results WHERE userId = ? AND correct = 1",
+          [userId],
+        ),
         this.progressRepo.find({ where: { user: { id: userId } }, relations: ["quest"] }),
       ]);
       doneIds = new Set([
-        ...results.filter((r) => r.questId).map((r) => r.questId!),
+        ...results.filter((r) => r.questId).map((r) => r.questId as string),
         ...progress.filter((p) => p.score > 0).map((p) => p.quest.id),
       ]);
     }
@@ -159,9 +194,12 @@ export class GameService {
       relations: ["discipline"],
     });
 
-    const existingCorrectResult = await this.resultRepo.findOne({
-      where: { userId, questId: dto.questId, correct: true },
-    });
+    await ensureResultsTable(this.dataSource);
+    const existingCorrectRows = await this.dataSource.query<Array<{ id: string }>>(
+      "SELECT id FROM results WHERE userId = ? AND questId = ? AND correct = 1 LIMIT 1",
+      [userId, dto.questId],
+    );
+    const existingCorrectResult = existingCorrectRows[0] ?? null;
     const existingProgress = await this.progressRepo.findOne({
       where: { user: { id: userId }, quest: { id: dto.questId } },
     });
@@ -195,15 +233,18 @@ export class GameService {
 
     await this.userRepo.save(user);
 
-    const result = this.resultRepo.create({
-      userId,
-      questId: dto.questId,
-      disciplineSlug: quest?.discipline?.slug ?? null,
-      correct: dto.correct,
-      xpEarned,
-      timeMs: dto.timeMs ?? null,
-    });
-    await this.resultRepo.save(result);
+    await this.dataSource.query(
+      "INSERT INTO results (id, userId, questId, disciplineSlug, correct, xpEarned, timeMs) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [
+        randomUUID(),
+        userId,
+        dto.questId,
+        quest?.discipline?.slug ?? null,
+        dto.correct ? 1 : 0,
+        xpEarned,
+        dto.timeMs ?? null,
+      ],
+    );
 
     if (!hasCompletedProgress && quest && dto.correct) {
       const progress = existingProgress ?? this.progressRepo.create({ user, quest });
@@ -233,9 +274,13 @@ export class GameService {
     const earned: Array<{ name: string; icon: string }> = [];
     const existingSlugs = new Set(user.userBadges?.map((ub) => ub.badge.slug) ?? []);
     const allBadges = await this.badgeRepo.find();
-    const allResults = await this.resultRepo.find({ where: { userId: user.id } });
+    await ensureResultsTable(this.dataSource);
+    const allResults = await this.dataSource.query<ResultRow[]>(
+      "SELECT correct, disciplineSlug, xpEarned, questId FROM results WHERE userId = ?",
+      [user.id],
+    );
 
-    const allCorrect = allResults.filter((r) => r.correct);
+    const allCorrect = allResults.filter((r) => isCorrect(r.correct));
     const slugCounts = allCorrect.reduce<Record<string, number>>((acc, r) => {
       if (r.disciplineSlug) acc[r.disciplineSlug] = (acc[r.disciplineSlug] ?? 0) + 1;
       return acc;
@@ -351,7 +396,11 @@ export class GameService {
   }
 
   async getMastery(userId: string) {
-    const results = await this.resultRepo.find({ where: { userId } });
+    await ensureResultsTable(this.dataSource);
+    const results = await this.dataSource.query<ResultRow[]>(
+      "SELECT correct, disciplineSlug, questId, xpEarned FROM results WHERE userId = ?",
+      [userId],
+    );
     const slugMap = new Map<string, { correct: number; total: number }>();
 
     for (const r of results) {
@@ -359,7 +408,7 @@ export class GameService {
       if (!slugMap.has(slug)) slugMap.set(slug, { correct: 0, total: 0 });
       const entry = slugMap.get(slug)!;
       entry.total++;
-      if (r.correct) entry.correct++;
+      if (isCorrect(r.correct)) entry.correct++;
     }
 
     const mastery: Record<string, number> = {};
@@ -373,10 +422,11 @@ export class GameService {
     const since = new Date();
     since.setDate(since.getDate() - 13);
 
-    const results = await this.resultRepo.find({
-      where: { userId, correct: true, createdAt: MoreThanOrEqual(since) },
-      order: { createdAt: "ASC" },
-    });
+    await ensureResultsTable(this.dataSource);
+    const results = await this.dataSource.query<Array<{ xpEarned: number; createdAt: Date | string }>>(
+      "SELECT xpEarned, createdAt FROM results WHERE userId = ? AND correct = 1 AND createdAt >= ? ORDER BY createdAt ASC",
+      [userId, since],
+    );
 
     const history: Record<string, number> = {};
     for (let i = 0; i < 14; i++) {
@@ -386,7 +436,7 @@ export class GameService {
     }
 
     for (const r of results) {
-      const day = r.createdAt.toISOString().slice(0, 10);
+      const day = new Date(r.createdAt).toISOString().slice(0, 10);
       if (day in history) history[day] += r.xpEarned;
     }
 

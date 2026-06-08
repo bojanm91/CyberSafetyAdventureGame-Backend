@@ -1,11 +1,35 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { UserBadge } from "../entities/user-badge.entity";
 import { Quest } from "../entities/quest.entity";
-import { Result } from "../entities/result.entity";
+
+type ResultProgressRow = {
+  questId: string | null;
+  disciplineSlug: string | null;
+  xpEarned: number;
+};
+
+async function ensureResultsTable(db: DataSource) {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS results (
+      id varchar(36) NOT NULL,
+      userId varchar(36) NOT NULL,
+      questId varchar(36) NULL,
+      disciplineSlug varchar(50) NULL,
+      correct tinyint(1) NOT NULL,
+      xpEarned int NOT NULL DEFAULT 0,
+      timeMs int NULL,
+      createdAt datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+      PRIMARY KEY (id),
+      INDEX IDX_results_userId (userId),
+      INDEX IDX_results_questId (questId),
+      INDEX IDX_results_user_correct (userId, correct)
+    ) ENGINE=InnoDB
+  `);
+}
 
 @Injectable()
 export class ProgressService {
@@ -18,8 +42,7 @@ export class ProgressService {
     private readonly userBadgeRepo: Repository<UserBadge>,
     @InjectRepository(Quest)
     private readonly questRepo: Repository<Quest>,
-    @InjectRepository(Result)
-    private readonly resultRepo: Repository<Result>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getMe(userId: string) {
@@ -31,10 +54,11 @@ export class ProgressService {
       relations: ["quest", "quest.discipline"],
     });
     const progressRecords = rawProgressRecords.filter((p) => p.score > 0);
-    const resultRecords = await this.resultRepo.find({
-      where: { userId, correct: true },
-      relations: ["quest", "quest.discipline"],
-    });
+    await ensureResultsTable(this.dataSource);
+    const resultRecords = await this.dataSource.query<ResultProgressRow[]>(
+      "SELECT questId, disciplineSlug, xpEarned FROM results WHERE userId = ? AND correct = 1",
+      [userId],
+    );
 
     const userBadges = await this.userBadgeRepo.find({
       where: { user: { id: userId } },
@@ -47,6 +71,9 @@ export class ProgressService {
       relations: ["discipline"],
     })).filter((q) => q.interactionType != null);
     const activeQuestIds = new Set(activeQuests.map((q) => q.id));
+    const activeQuestSlugs = new Map(
+      activeQuests.map((q) => [q.id, q.discipline?.slug ?? "unknown"]),
+    );
     const totalQuests = activeQuests.length;
     const completedQuestIds = new Set(
       progressRecords.map((p) => p.quest.id).filter((id) => activeQuestIds.has(id)),
@@ -76,15 +103,11 @@ export class ProgressService {
     const progressQuestIds = new Set(progressRecords.map((p) => p.quest.id));
     const countedResultQuestIds = new Set<string>();
     for (const r of resultRecords) {
-      if (
-        !r.quest ||
-        !r.questId ||
-        !activeQuestIds.has(r.questId) ||
-        progressQuestIds.has(r.questId) ||
-        countedResultQuestIds.has(r.questId)
-      ) continue;
+      if (!r.questId || !activeQuestIds.has(r.questId) || progressQuestIds.has(r.questId) || countedResultQuestIds.has(r.questId)) {
+        continue;
+      }
       countedResultQuestIds.add(r.questId);
-      const slug = r.quest.discipline?.slug ?? r.disciplineSlug ?? "unknown";
+      const slug = activeQuestSlugs.get(r.questId) ?? r.disciplineSlug ?? "unknown";
       if (!disciplineStats[slug]) {
         disciplineStats[slug] = { total: 0, completed: 0, points: 0 };
       }

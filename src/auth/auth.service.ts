@@ -5,11 +5,30 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, EntityManager, Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import { User } from "../entities/user.entity";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+
+async function ensureResultsTable(db: DataSource | EntityManager) {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS results (
+      id varchar(36) NOT NULL,
+      userId varchar(36) NOT NULL,
+      questId varchar(36) NULL,
+      disciplineSlug varchar(50) NULL,
+      correct tinyint(1) NOT NULL,
+      xpEarned int NOT NULL DEFAULT 0,
+      timeMs int NULL,
+      createdAt datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+      PRIMARY KEY (id),
+      INDEX IDX_results_userId (userId),
+      INDEX IDX_results_questId (questId),
+      INDEX IDX_results_user_correct (userId, correct)
+    ) ENGINE=InnoDB
+  `);
+}
 
 @Injectable()
 export class AuthService {
@@ -91,6 +110,7 @@ export class AuthService {
     if (!user) throw new UnauthorizedException("Korisnik nije pronađen.");
 
     await this.dataSource.transaction(async (manager) => {
+      await ensureResultsTable(manager);
       await manager.query("DELETE FROM user_quest_progress WHERE userId = ?", [userId]);
       await manager.query("DELETE FROM user_badges WHERE userId = ?", [userId]);
       await manager.query("DELETE FROM results WHERE userId = ?", [userId]);
