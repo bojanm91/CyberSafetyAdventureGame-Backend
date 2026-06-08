@@ -1,18 +1,13 @@
 import { JwtService } from "@nestjs/jwt";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { User } from "../entities/user.entity";
-import { Result } from "../entities/result.entity";
-import { UserBadge } from "../entities/user-badge.entity";
-import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 export declare class AuthService {
     private readonly userRepository;
-    private readonly resultRepository;
-    private readonly userBadgeRepository;
-    private readonly progressRepository;
     private readonly jwtService;
-    constructor(userRepository: Repository<User>, resultRepository: Repository<Result>, userBadgeRepository: Repository<UserBadge>, progressRepository: Repository<UserQuestProgress>, jwtService: JwtService);
+    private readonly dataSource;
+    constructor(userRepository: Repository<User>, jwtService: JwtService, dataSource: DataSource);
     private buildToken;
     private safeUser;
     login(loginDto: LoginDto): Promise<{

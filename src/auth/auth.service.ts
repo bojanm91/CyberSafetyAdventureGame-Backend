@@ -5,12 +5,9 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import { User } from "../entities/user.entity";
-import { Result } from "../entities/result.entity";
-import { UserBadge } from "../entities/user-badge.entity";
-import { UserQuestProgress } from "../entities/user-quest-progress.entity";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 
@@ -19,13 +16,8 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Result)
-    private readonly resultRepository: Repository<Result>,
-    @InjectRepository(UserBadge)
-    private readonly userBadgeRepository: Repository<UserBadge>,
-    @InjectRepository(UserQuestProgress)
-    private readonly progressRepository: Repository<UserQuestProgress>,
     private readonly jwtService: JwtService,
+    private readonly dataSource: DataSource,
   ) {}
 
   private buildToken(user: User): string {
@@ -98,18 +90,12 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) throw new UnauthorizedException("Korisnik nije pronađen.");
 
-    await this.progressRepository
-      .createQueryBuilder()
-      .delete()
-      .where("userId = :userId", { userId })
-      .execute();
-    await this.userBadgeRepository
-      .createQueryBuilder()
-      .delete()
-      .where("userId = :userId", { userId })
-      .execute();
-    await this.resultRepository.delete({ userId });
-    await this.userRepository.delete({ id: userId });
+    await this.dataSource.transaction(async (manager) => {
+      await manager.query("DELETE FROM user_quest_progress WHERE userId = ?", [userId]);
+      await manager.query("DELETE FROM user_badges WHERE userId = ?", [userId]);
+      await manager.query("DELETE FROM results WHERE userId = ?", [userId]);
+      await manager.delete(User, { id: userId });
+    });
 
     return { deleted: true };
   }

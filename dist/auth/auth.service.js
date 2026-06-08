@@ -52,21 +52,14 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const bcrypt = __importStar(require("bcryptjs"));
 const user_entity_1 = require("../entities/user.entity");
-const result_entity_1 = require("../entities/result.entity");
-const user_badge_entity_1 = require("../entities/user-badge.entity");
-const user_quest_progress_entity_1 = require("../entities/user-quest-progress.entity");
 let AuthService = class AuthService {
     userRepository;
-    resultRepository;
-    userBadgeRepository;
-    progressRepository;
     jwtService;
-    constructor(userRepository, resultRepository, userBadgeRepository, progressRepository, jwtService) {
+    dataSource;
+    constructor(userRepository, jwtService, dataSource) {
         this.userRepository = userRepository;
-        this.resultRepository = resultRepository;
-        this.userBadgeRepository = userBadgeRepository;
-        this.progressRepository = progressRepository;
         this.jwtService = jwtService;
+        this.dataSource = dataSource;
     }
     buildToken(user) {
         return this.jwtService.sign({
@@ -131,18 +124,12 @@ let AuthService = class AuthService {
         const user = await this.userRepository.findOneBy({ id: userId });
         if (!user)
             throw new common_1.UnauthorizedException("Korisnik nije pronađen.");
-        await this.progressRepository
-            .createQueryBuilder()
-            .delete()
-            .where("userId = :userId", { userId })
-            .execute();
-        await this.userBadgeRepository
-            .createQueryBuilder()
-            .delete()
-            .where("userId = :userId", { userId })
-            .execute();
-        await this.resultRepository.delete({ userId });
-        await this.userRepository.delete({ id: userId });
+        await this.dataSource.transaction(async (manager) => {
+            await manager.query("DELETE FROM user_quest_progress WHERE userId = ?", [userId]);
+            await manager.query("DELETE FROM user_badges WHERE userId = ?", [userId]);
+            await manager.query("DELETE FROM results WHERE userId = ?", [userId]);
+            await manager.delete(user_entity_1.User, { id: userId });
+        });
         return { deleted: true };
     }
 };
@@ -150,13 +137,8 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __param(1, (0, typeorm_1.InjectRepository)(result_entity_1.Result)),
-    __param(2, (0, typeorm_1.InjectRepository)(user_badge_entity_1.UserBadge)),
-    __param(3, (0, typeorm_1.InjectRepository)(user_quest_progress_entity_1.UserQuestProgress)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository,
-        typeorm_2.Repository,
-        typeorm_2.Repository,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        typeorm_2.DataSource])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
