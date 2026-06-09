@@ -12,7 +12,7 @@ export const DISCIPLINES_DATA = [
 export const QUESTS_DATA = [
   {
     disciplineSlug: "password-base",
-    title: "Koja lozinka je najsigurnija?",
+    title: "Koja lozinka je najbezbjednija?",
     difficulty: "easy" as const,
     basePoints: 50,
     questType: "multiple_choice" as const,
@@ -20,7 +20,7 @@ export const QUESTS_DATA = [
     scenario: "Korisnik kreira nalog za novi online servis koji čuva važne finansijske dokumente.",
     taskText: "Izaberi najbezbjedniju lozinku.",
     hintText: "Dužina lozinke je često važnija od nasumičnog dodavanja jednog simbola.",
-    feedbackCorrect: "Dobra lozinka treba da bude duga, jedinstvena i teško pogodiva. Fraze koje kombinuju više nepovezanih riječi su gotovo nemoguće za pogoditi.",
+    feedbackCorrect: "Dobra lozinka treba da bude duga, jedinstvena i teško pogodiva. Fraze koje spajaju više nepovezanih riječi napadačima su mnogo teže za probijanje.",
     miniConclusion: "Duga passphrase sa kombinacijom nepovezanih riječi, brojeva i simbola je uvijek jača od kratke 'kompleksne' lozinke.",
     options: [
       { text: "marko123", isCorrect: false, explanation: "Ime i broj su prva kombinacija koju napadači pokušavaju.", order: 1 },
@@ -37,14 +37,14 @@ export const QUESTS_DATA = [
     questType: "decision" as const,
     orderInDiscipline: 1,
     scenario: "Korisniku stiže email od adrese 'support@bankovni-sistem-secure.net' sa naslovom 'HITNO: Vaš nalog je privremeno suspendovan'.",
-    taskText: "Šta je najsigurnija reakcija?",
+    taskText: "Šta je najbezbjednija reakcija?",
     hintText: "Obrati pažnju na hitnost poruke, adresu pošiljaoca i zahtjev za unos osjetljivih podataka.",
     feedbackCorrect: "Phishing poruke gotovo uvijek koriste pritisak i hitnost. Legitimna banka nikad ne traži da unosiš podatke kartice preko linka iz emaila.",
     miniConclusion: "Sumnjivim emailovima nikad ne klikaj na linkove — idi direktno na zvanični sajt.",
     options: [
       { text: "Odmah kliknuti link jer poruka izgleda hitno", isCorrect: false, explanation: "Upravo na to napadači računaju — hitnost i lažni autoritet su osnova phishinga.", order: 1 },
       { text: "Odgovoriti na email i tražiti objašnjenje", isCorrect: false, explanation: "Odgovaranjem potvrđuješ napadaču da je adresa aktivna.", order: 2 },
-      { text: "Ne klikati link, provjeriti adresu pošiljaoca i pristupiti banci direktno", isCorrect: true, explanation: "Ovo je jedina sigurna reakcija.", order: 3 },
+      { text: "Ne klikati link, provjeriti adresu pošiljaoca i otvoriti banku direktno", isCorrect: true, explanation: "Ovo je jedina bezbjedna reakcija.", order: 3 },
       { text: "Proslijediti email prijatelju da provjeri", isCorrect: false, explanation: "Prosljeđivanjem širiš potencijalnu phishing poruku.", order: 4 },
     ],
   },
@@ -56,14 +56,14 @@ export const QUESTS_DATA = [
     questType: "risk_assessment" as const,
     orderInDiscipline: 1,
     scenario: "Korisnik se sprema za putovanje i želi da objavi fotografiju avionske karte na Instagram story.",
-    taskText: "Koji je najveći sigurnosni rizik?",
+    taskText: "Koji je najveći bezbjednosni rizik?",
     hintText: "Razmisli koji konkretni podaci se nalaze na avionskoj karti, osim datuma i destinacije.",
     feedbackCorrect: "Avionska karta sadrži ime, broj leta, kod rezervacije i bar kod. Kod rezervacije može biti iskorišćen za pristup tvojoj rezervaciji.",
     miniConclusion: "Osjetljive podatke zamaži ili sakrij prije objave.",
     options: [
       { text: "Nema rizika — story traje samo 24 sata", isCorrect: false, explanation: "Story može biti screenshotovan odmah.", order: 1 },
       { text: "Na karti se nalaze lični podaci i kod rezervacije koji mogu biti zloupotrijebljeni", isCorrect: true, explanation: "Kod rezervacije može otvoriti pristup cijeloj rezervaciji.", order: 2 },
-      { text: "Rizik postoji samo ako je Instagram profil javan", isCorrect: false, explanation: "Pratici također mogu screenshotovati.", order: 3 },
+      { text: "Rizik postoji samo ako je Instagram profil javan", isCorrect: false, explanation: "I pratioci mogu odmah napraviti screenshot.", order: 3 },
       { text: "Nema problema ako se prekrije samo lice", isCorrect: false, explanation: "Lice nije problem — problem su kodovi na karti.", order: 4 },
     ],
   },
@@ -93,30 +93,30 @@ export const QUESTS_DATA = [
     basePoints: 70,
     questType: "decision" as const,
     orderInDiscipline: 1,
-    scenario: "Korisnik dobija Instagram poruku od profila prijatelja: 'Hej, ukraden mi je novčanik. Možeš li mi hitno poslati 50€?'",
-    taskText: "Koja reakcija je najsigurnija?",
+    scenario: "Korisnik dobija Instagram poruku od profila prijatelja: 'Hej, ukraden mi je novčanik. Možeš li mi hitno poslati 50 €?'",
+    taskText: "Koja reakcija je najbezbjednija?",
     hintText: "Social engineering napadi računaju na hitnost i emocionalni odgovor.",
     feedbackCorrect: "Kompromitovani nalozi na društvenim mrežama se veoma često koriste za ovakve prevare. Uvijek provjeri identitet osobe drugim kanalom.",
     miniConclusion: "Hitni zahtjevi za novcem ili podacima = uvijek provjeri identitet drugim kanalom.",
     options: [
       { text: "Odmah poslati novac — to je prijatelj u nevolji", isCorrect: false, explanation: "Hitnost je glavno oruđe social engineeringa.", order: 1 },
       { text: "Tražiti broj računa i poslati manji iznos kao provjeru", isCorrect: false, explanation: "Čak i manji iznos pomaže napadaču.", order: 2 },
-      { text: "Kontaktirati prijatelja pozivom ili SMS-om na poznati broj", isCorrect: true, explanation: "Jedino siguran korak — provjeri identitet putem kanala koji znaš.", order: 3 },
+      { text: "Kontaktirati prijatelja pozivom ili SMS-om na poznati broj", isCorrect: true, explanation: "Jedini bezbjedan korak je da provjeriš identitet putem kanala koji već znaš.", order: 3 },
       { text: "Objaviti screenshot na sopstvenom story-u", isCorrect: false, explanation: "Objava bez provjere može biti nepravična.", order: 4 },
     ],
   },
 ];
 
 export const BADGES_DATA = [
-  { name: "Password Protector", slug: "password-protector", description: "Završio/la sve questove iz Password Base discipline.", icon: "🔐", conditionType: "discipline_complete" as const, conditionValue: "password-base" },
-  { name: "Phishing Hunter", slug: "phishing-hunter", description: "Završio/la sve questove iz Phishing Harbor discipline.", icon: "🎣", conditionType: "discipline_complete" as const, conditionValue: "phishing-harbor" },
-  { name: "Privacy Guardian", slug: "privacy-guardian", description: "Završio/la sve questove iz Privacy Zone discipline.", icon: "🛡️", conditionType: "discipline_complete" as const, conditionValue: "privacy-zone" },
-  { name: "Malware Defender", slug: "malware-defender", description: "Završio/la sve questove iz Malware Lab discipline.", icon: "🦠", conditionType: "discipline_complete" as const, conditionValue: "malware-lab" },
-  { name: "Mind Guard", slug: "mind-guard", description: "Završio/la sve questove iz Social Engineering Street discipline.", icon: "🧠", conditionType: "discipline_complete" as const, conditionValue: "social-engineering" },
-  { name: "No Hint Hero", slug: "no-hint-hero", description: "Završio/la quest bez korišćenja hinta.", icon: "⚡", conditionType: "no_hint" as const, conditionValue: null },
-  { name: "Perfect Mission", slug: "perfect-mission", description: "Završio/la quest sa maksimalnim rezultatom.", icon: "🏆", conditionType: "perfect_score" as const, conditionValue: null },
-  { name: "Cyber Guardian", slug: "cyber-guardian", description: "Završio/la sve dostupne questove.", icon: "🌐", conditionType: "all_complete" as const, conditionValue: null },
-  { name: "First Steps", slug: "first-steps", description: "Završio/la prvih 5 questova.", icon: "👣", conditionType: "quests_count" as const, conditionValue: "5" },
+  { name: "Password Protector", slug: "password-protector", description: "Završio/la sve misije iz Password Base discipline.", icon: "🔐", conditionType: "discipline_complete" as const, conditionValue: "password-base" },
+  { name: "Phishing Hunter", slug: "phishing-hunter", description: "Završio/la sve misije iz Phishing Harbor discipline.", icon: "🎣", conditionType: "discipline_complete" as const, conditionValue: "phishing-harbor" },
+  { name: "Privacy Guardian", slug: "privacy-guardian", description: "Završio/la sve misije iz Privacy Zone discipline.", icon: "🛡️", conditionType: "discipline_complete" as const, conditionValue: "privacy-zone" },
+  { name: "Malware Defender", slug: "malware-defender", description: "Završio/la sve misije iz Malware Lab discipline.", icon: "🦠", conditionType: "discipline_complete" as const, conditionValue: "malware-lab" },
+  { name: "Mind Guard", slug: "mind-guard", description: "Završio/la sve misije iz Social Engineering Street discipline.", icon: "🧠", conditionType: "discipline_complete" as const, conditionValue: "social-engineering" },
+  { name: "No Hint Hero", slug: "no-hint-hero", description: "Završio/la misiju bez korišćenja hinta.", icon: "⚡", conditionType: "no_hint" as const, conditionValue: null },
+  { name: "Perfect Mission", slug: "perfect-mission", description: "Završio/la misiju sa maksimalnim rezultatom.", icon: "🏆", conditionType: "perfect_score" as const, conditionValue: null },
+  { name: "Cyber Guardian", slug: "cyber-guardian", description: "Završio/la sve dostupne misije.", icon: "🌐", conditionType: "all_complete" as const, conditionValue: null },
+  { name: "First Steps", slug: "first-steps", description: "Završio/la prvih 5 misija.", icon: "👣", conditionType: "quests_count" as const, conditionValue: "5" },
 ];
 
 // ─── NOVI GAME SISTEM ─────────────────────────────────────────────────────────
@@ -147,8 +147,8 @@ export const GAME_TOPICS_DATA = [
   {
     slug: "lozinke",
     name: "Lozinke",
-    opis: "Nauči kako da kreiraš jake lozinke i upravljaš njima sigurno.",
-    lekcija: "Jaka lozinka je duga, jedinstvena i nasumična. Koristite menadžer lozinki da zapamtite zasebnu lozinku za svaki nalog. Nikad ne ponavljajte lozinke — jedan kompromitovani nalog ne smije ugroziti sve ostale.",
+    opis: "Nauči kako da kreiraš jake lozinke i upravljaš njima bezbjedno.",
+    lekcija: "Jaka lozinka je duga, jedinstvena i nasumična. Koristi password manager da za svaki nalog imaš posebnu lozinku. Nikad ne ponavljaj lozinke — jedan kompromitovani nalog ne smije ugroziti sve ostale.",
     ikona: "🔑",
     colorClass: "from-cyan/20 to-cyan/5 border-cyan/25",
     order: 10,
@@ -173,18 +173,18 @@ export const GAME_TOPICS_DATA = [
   },
   {
     slug: "malver",
-    name: "Malver",
+    name: "Malware",
     opis: "Prepoznaj maliciozni softver i zaštiti uređaj od infekcija.",
-    lekcija: "Malver dolazi kroz zaražene fajlove, lažne aplikacije i sumnjive linkove. Nikad ne otvaraj .exe fajlove od nepoznatih pošiljalaca. Redovni backup podataka je jedina prava zaštita od ransomwarea.",
+    lekcija: "Malware često dolazi kroz zaražene fajlove, lažne aplikacije i sumnjive linkove. Nikad ne otvaraj .exe fajlove od nepoznatih pošiljalaca. Redovan backup podataka je najbolja zaštita ako te pogodi ransomware.",
     ikona: "🦠",
     colorClass: "from-rose/20 to-rose/5 border-rose/25",
     order: 13,
   },
   {
     slug: "javni-wifi",
-    name: "Javni WiFi",
-    opis: "Sigurno koristi javne WiFi mreže i zaštiti podatke u pokretu.",
-    lekcija: "Na otvorenom WiFi-ju neko može presretati sav saobraćaj. Za osjetljive radnje — bankarstvo, email, prijave — koristi mobilne podatke ili VPN. Nikad ne povjeravaj osjetljive podatke otvorenoj mreži.",
+    name: "Javni Wi-Fi",
+    opis: "Koristi javne Wi-Fi mreže oprezno i zaštiti podatke u pokretu.",
+    lekcija: "Na javnom Wi-Fi-ju neko može presretati saobraćaj. Za osjetljive radnje — bankarstvo, email, prijave — koristi mobilne podatke ili VPN. Ne šalji lozinke i podatke kartice preko otvorene mreže.",
     ikona: "📡",
     colorClass: "from-amber/20 to-amber/5 border-amber/25",
     order: 14,
@@ -193,7 +193,7 @@ export const GAME_TOPICS_DATA = [
     slug: "dvofaktorska",
     name: "Dvofaktorska zaštita",
     opis: "Dodaj drugi sloj zaštite na sve važne naloge.",
-    lekcija: "Dvofaktorska autentifikacija znači da napadač ne može ući čak i ako sazna lozinku. Authenticator aplikacija je sigurnija od SMS-a jer ne ovisi o mobilnoj mreži. Uvijek uključi 2FA gdje god je dostupna.",
+    lekcija: "Dvofaktorska autentifikacija znači da napadač ne može ući samo sa lozinkom. Authenticator app je bezbjedniji od SMS-a jer ne zavisi od mobilne mreže. Uključi 2FA gdje god je dostupna.",
     ikona: "🔐",
     colorClass: "from-blue/20 to-blue/5 border-blue/25",
     order: 15,
@@ -219,15 +219,15 @@ export const GAME_TOPICS_DATA = [
   {
     slug: "azuriranja",
     name: "Ažuriranja softvera",
-    opis: "Drži sistem i aplikacije uvijek ažurnim radi sigurnosti.",
-    lekcija: "Sigurnosna ažuriranja krpe rupe kroz koje napadači ulaze u sistem. Zastarjeli softver je najčešći ulaz za malware i hakerske napade. Uključi automatska ažuriranja i primijeni ih što prije — ne odgađaj.",
+    opis: "Drži sistem i aplikacije ažurnim zbog bezbjednosti.",
+    lekcija: "Bezbjednosna ažuriranja krpe rupe kroz koje napadači ulaze u sistem. Zastarjeli softver je čest ulaz za malware i napade. Uključi automatska ažuriranja i primijeni ih što prije — ne odgađaj.",
     ikona: "🔄",
     colorClass: "from-teal/20 to-teal/5 border-teal/25",
     order: 18,
   },
   {
     slug: "sigurno-preuzimanje",
-    name: "Sigurno preuzimanje",
+    name: "Bezbjedno preuzimanje",
     opis: "Preuzimaj softver samo iz provjerenih izvora.",
     lekcija: "Lažne aplikacije i piratski softver često sadrže malware. Uvijek preuzimaj iz zvanične prodavnice (App Store, Google Play) ili direktno sa stranice proizvođača. Provjeri recenzije i dozvole aplikacije prije instalacije.",
     ikona: "⬇️",
@@ -270,7 +270,7 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 40,
     order: 2,
-    tekst: "Praviš prvu lozinku za svoj nalog u Akademiji. Koja je od ovih najsigurnija?",
+    tekst: "Praviš prvu lozinku za svoj nalog u Akademiji. Koja je od ovih najbezbjednija?",
     hint: "Dužina i nepovezane riječi jače su od kratke „komplikovane“ lozinke.",
     objasnjenje: "Duga fraza od nepovezanih riječi teža je za probijanje od kratke lozinke s par simbola. Imena, datumi i „lozinka123“ prve su kombinacije koje napadači probaju. Pravilo: što duže i nepredvidivije, to bolje — i koristi jedinstvenu lozinku za svaki nalog.",
     gameData: {
@@ -312,7 +312,7 @@ export const SCENARIOS_DATA = [
     order: 4,
     tekst: "Bajt ti predlaže da uključiš dvofaktorsku zaštitu (2FA). Šta je tačno o 2FA?",
     hint: "Šta se desi ako neko sazna tvoju lozinku, a ti imaš uključen i drugi faktor?",
-    objasnjenje: "2FA dodaje drugi sloj — kod iz aplikacije ili poruke koji samo ti imaš. I ako napadač sazna lozinku, bez drugog faktora ne može da uđe. Authenticator aplikacija je sigurnija od SMS-a. Uvijek uključi 2FA gdje god je dostupna.",
+    objasnjenje: "2FA dodaje drugi sloj — kod iz aplikacije ili poruke koji samo ti imaš. I ako napadač sazna lozinku, bez drugog faktora ne može da uđe. Authenticator app je bezbjedniji od SMS-a. Uključi 2FA gdje god je dostupna.",
     gameData: {
       opcije: [
         { id: "a", tekst: "Nepotrebna je ako imam jaku lozinku." },
@@ -329,12 +329,12 @@ export const SCENARIOS_DATA = [
   // ═══════════════════════════════════════════════════════════════════
   {
     topicSlug: "lozinke",
-    title: "Koja lozinka je najsigurnija?",
+    title: "Koja lozinka je najbezbjednija?",
     interactionType: "odluka",
     difficulty: "easy",
     xp: 50,
     order: 1,
-    tekst: "Tvoj prijatelj kreira nalog za online bankarstvo i traži savjet. Koja od ovih lozinki je zaista sigurna?",
+    tekst: "Tvoj prijatelj kreira nalog za online bankarstvo i traži savjet. Koja od ovih lozinki je zaista bezbjedna?",
     hint: "Razmisli o dužini, nasumičnosti i jedinstvenosti.",
     objasnjenje: "Duga fraza od nepovezanih nasumičnih riječi je teža za probijanje od kratke 'komplikovane' lozinke. Dužina je važnija od simbola. Idealno: jedinstvena lozinka po nalogu uz menadžer lozinki.",
     gameData: {
@@ -354,9 +354,9 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 60,
     order: 2,
-    tekst: "Iskuj lozinku koja dostigne ocjenu 'jaka'. Moraš ispuniti sve kriterije.",
+    tekst: "Napravi lozinku koja dostigne ocjenu 'jaka'. Moraš ispuniti sve kriterijume.",
     hint: "Kombinuj malo i veliko slovo, broj i simbol — i neka bude duga.",
-    objasnjenje: "Snaga raste s dužinom i raznovrsnošću znakova. Izbjegavaj imena, datume rođenja i riječi iz rječnika — njih napadači probaju prve. Passphrase od više nepovezanih riječi je i laka za pamćenje i jaka.",
+    objasnjenje: "Snaga raste s dužinom i raznovrsnošću znakova. Izbjegavaj imena, datume rođenja i riječi iz rječnika — njih napadači probaju prve. Passphrase od više nepovezanih riječi je lak za pamćenje, a jak za zaštitu.",
     gameData: {
       kriteriji: [
         { id: "k1", tekst: "Najmanje 12 znakova", regex: ".{12,}" },
@@ -400,14 +400,14 @@ export const SCENARIOS_DATA = [
     order: 1,
     tekst: "Prikazan je email koji si primio/la. Tapni sve crvene zastavice — znakove da je ovo phishing!",
     hint: "Provjeri adresu pošiljaoca, naslov, tijelo poruke i link.",
-    objasnjenje: "Phishing kombinuje hitnost i strah da te natjera na brzu reakciju. Provjeri pravi domen pošiljaoca — 'paypa1' (s jedinicom umjesto slova l) nije PayPal. Nikad ne kuckaj lozinku kroz link iz poruke — otvori sajt ručno.",
+    objasnjenje: "Phishing koristi hitnost i strah da te natjera na brzu reakciju. Provjeri pravi domen pošiljaoca — 'paypa1' (sa jedinicom umjesto slova l) nije PayPal. Nikad ne unosi lozinku preko linka iz poruke — otvori sajt ručno.",
     gameData: {
       od: "support@paypa1-secure.com",
       naslov: "HITNO: Vaš nalog će biti zaključan za 24h!!!",
-      tijelo: "Poštovani korisniče,\n\nPrimjetili smo sumnjive aktivnosti na Vašem PayPal nalogu. Molimo Vas da odmah potvrdite svoje podatke kako bi izbegli trajno blokiranje naloga.\n\nVaš nalog će biti ZAKLJUČAN za 24 sata ako ne preduzmete hitne mjere.\n\nKliknite ovdje da potvrdite:\nhttp://paypal-verify.tk/login\n\nPayPal Tim za bezbjednost",
+      tijelo: "Poštovani korisniče,\n\nPrimijetili smo sumnjive aktivnosti na Vašem PayPal nalogu. Molimo Vas da odmah potvrdite svoje podatke kako bi izbegli trajno blokiranje naloga.\n\nVaš nalog će biti ZAKLJUČAN za 24 sata ako ne preduzmete hitne mjere.\n\nKliknite ovdje da potvrdite:\nhttp://paypal-verify.tk/login\n\nPayPal Tim za bezbjednost",
       link: "http://paypal-verify.tk/login",
       zastavice: [
-        { id: "z1", tekst: "Lažni domen u e-mail adresi (paypa1 umjesto paypal)", element: "od" },
+        { id: "z1", tekst: "Lažni domen u email adresi (paypa1 umjesto paypal)", element: "od" },
         { id: "z2", tekst: "Vještačka hitnost i prijetnja blokiranjem", element: "naslov" },
         { id: "z3", tekst: "Sumnjiv link sa .tk domenom", element: "link" },
         { id: "z4", tekst: "Greška u pravopisu (izbegli umjesto izbjegli)", element: "tijelo" },
@@ -442,7 +442,7 @@ export const SCENARIOS_DATA = [
     order: 3,
     tekst: "Imaš 45 sekundi! Odgovori na sva pitanja o prepoznavanju phishinga što brže možeš.",
     hint: "Nemoj razmišljati predugo — pročitaj svako pitanje i biraj instinktivno.",
-    objasnjenje: "Brzo prepoznavanje phishinga je vještina — što više vježbaš, to lakše uočavaš crvene zastavice na intuitivnom nivou. Klj. znakovi: lažni domen, hitnost, zahtjev za podacima, greške u tekstu.",
+    objasnjenje: "Brzo prepoznavanje phishinga je vještina — što više vježbaš, to lakše uočavaš crvene zastavice. Ključni znakovi su lažni domen, hitnost, zahtjev za podacima i greške u tekstu.",
     gameData: {
       vrijemeSekundi: 45,
       pitanja: [
@@ -452,12 +452,12 @@ export const SCENARIOS_DATA = [
           tacno: 1,
         },
         {
-          tekst: "Što je tipičan znak phishing emaila?",
+          tekst: "Šta je tipičan znak phishing emaila?",
           opcije: ["Ime pošiljaoca", "Vještačka hitnost i prijetnja", "Dug tekst", "Prilog .pdf"],
           tacno: 1,
         },
         {
-          tekst: "Šta nikad ne trebaš uraditi ako primiš sumnjivi email?",
+          tekst: "Šta nikad ne treba da uradiš ako primiš sumnjivi email?",
           opcije: ["Prijaviti kao spam", "Kliknuti link i provjeriti", "Obrisati email", "Kontaktirati podršku direktno"],
           tacno: 1,
         },
@@ -481,12 +481,12 @@ export const SCENARIOS_DATA = [
   // ═══════════════════════════════════════════════════════════════════
   {
     topicSlug: "privatnost",
-    title: "Šta je sigurno podijeliti?",
+    title: "Šta je bezbjedno podijeliti?",
     interactionType: "razvrstaj",
     difficulty: "easy",
     xp: 55,
     order: 1,
-    tekst: "Razvrstavaj stavke u dvije kategorije: šta je sigurno dijeliti online, a šta je rizično?",
+    tekst: "Razvrstaj stavke u dvije kategorije: šta je bezbjedno dijeliti online, a šta je rizično?",
     hint: "Razmisli ko može vidjeti ovu informaciju i kako bi je mogao zloupotrijebiti.",
     objasnjenje: "Svaki podatak koji objaviš online može biti viđen, snimljen i zloupotrijebljen. Datum rođenja, kućna adresa i broj telefona su zlatna ruda za identitetsku krađu. Dijeli samo ono što bi pokazao potpunom strancu na ulici.",
     gameData: {
@@ -499,7 +499,7 @@ export const SCENARIOS_DATA = [
         { id: "s6", tekst: "Profesionalne vještine na LinkedIn-u" },
       ],
       kante: [
-        { id: "sigurno", naziv: "Sigurno ✓" },
+        { id: "sigurno", naziv: "Bezbjedno ✓" },
         { id: "rizicno", naziv: "Rizično ✗" },
       ],
     },
@@ -519,12 +519,12 @@ export const SCENARIOS_DATA = [
     hint: "Manje dozvola = manje podataka koje aplikacije skupljaju.",
     objasnjenje: "Aplikacije skupljaju daleko više podataka nego što im treba. Lokacija u pozadini je rijetko potrebna. Reklamni ID možeš resetovati da ograničiš praćenje. Korisno je redovno provjeravati postavke privatnosti.",
     gameData: {
-      uputstvo: "Postavi sigurne privatnost opcije.",
+      uputstvo: "Postavi bezbjedne opcije privatnosti.",
       opcije: [
         { id: "o1", naziv: "Lokacija samo kada koristim aplikaciju", opis: "Aplikacije ne prate lokaciju u pozadini", ikona: "📍", tacnoStanje: true },
         { id: "o2", naziv: "Lokacija uvijek (i u pozadini)", opis: "Aplikacije prate lokaciju stalno", ikona: "🗺️", tacnoStanje: false },
         { id: "o3", naziv: "Resetuj reklamni ID", opis: "Ograničava praćenje za reklame", ikona: "🎯", tacnoStanje: true },
-        { id: "o4", naziv: "Dijeli analitiku s programerima", opis: "Šalje podatke o korištenju aplikacija", ikona: "📊", tacnoStanje: false },
+        { id: "o4", naziv: "Dijeli analitiku s programerima", opis: "Šalje podatke o korišćenju aplikacija", ikona: "📊", tacnoStanje: false },
       ],
     },
     correctData: { ukljuceno: ["o1", "o3"], iskljuceno: ["o2", "o4"] },
@@ -536,9 +536,9 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 50,
     order: 3,
-    tekst: "Upravo si stigao/la na odmor i hoćeš da objavljuješ slike. Koja praksa je najsigurnija za tebe i dom?",
-    hint: "Razmisli tko zna da si odsutan/na ako objaviš u realnom vremenu.",
-    objasnjenje: "Objava lokacije u realnom vremenu govori svim pratiocima — i potencijalnim lopovima — da nisi kod kuće. Bezbjedno je dijeliti uspomene NAKON povratka, bez preciznih geotag-ova. Privatni profil ne znači automatski sigurnost.",
+    tekst: "Upravo si stigao/la na odmor i hoćeš da objavljuješ slike. Koja praksa je najbezbjednija za tebe i tvoj dom?",
+    hint: "Razmisli ko zna da nisi kod kuće ako objavljuješ u realnom vremenu.",
+    objasnjenje: "Objava lokacije u realnom vremenu govori pratiocima — i potencijalnim lopovima — da nisi kod kuće. Bezbjednije je dijeliti uspomene nakon povratka, bez preciznih geotagova. Privatni profil ne znači automatski da si zaštićen/a.",
     gameData: {
       opcije: [
         { id: "a", tekst: "Objavljujem sve slike odmah s tačnom lokacijom" },
@@ -562,7 +562,7 @@ export const SCENARIOS_DATA = [
     order: 1,
     tekst: "Primio/la si email od nepoznatog pošiljaoca sa prilogom 'Faktura_2026.exe'. Šta radiš?",
     hint: "Koje vrste fajlova mogu pokretati programe na računaru?",
-    objasnjenje: ".exe fajlovi su izvršni programi koji mogu pokrenuti bilo koji kod na tvom računaru. Legitimna faktura uvijek dolazi kao PDF, nikad kao .exe. Napadači prerušavaju malware kao uobičajene dokumente da te prevare na otvaranje.",
+    objasnjenje: ".exe fajlovi su izvršni programi i mogu pokrenuti bilo koji kod na računaru. Legitimna faktura dolazi kao PDF, ne kao .exe. Napadači često sakriju malware iza naziva koji liči na običan dokument.",
     gameData: {
       opcije: [
         { id: "a", tekst: "Otvorim prilog — vjerovatno je zaista faktura" },
@@ -575,14 +575,14 @@ export const SCENARIOS_DATA = [
   },
   {
     topicSlug: "malver",
-    title: "Sigurno vs nesigurno preuzimanje",
+    title: "Bezbjedno ili rizično preuzimanje",
     interactionType: "razvrstaj",
     difficulty: "medium",
     xp: 70,
     order: 2,
-    tekst: "Razvrstaj — koji načini preuzimanja softvera su sigurni, a koji su rizični?",
+    tekst: "Razvrstaj načine preuzimanja softvera na bezbjedne i rizične.",
     hint: "Zvanični izvori imaju sistem provjere aplikacija. Torrent i nepoznati sajtovi — nemaju.",
-    objasnjenje: "Malware se najčešće širi kroz piratski softver i aplikacije iz neslužbenih izvora. Zvanične prodavnice (App Store, Google Play, Microsoft Store) imaju sisteme provjere koji ne uklanjaju sve malware, ali drastično smanjuju rizik. Uvijek preuzimaj direktno s web stranice proizvođača.",
+    objasnjenje: "Malware se često širi kroz piratski softver i aplikacije iz nezvaničnih izvora. Zvanične prodavnice (App Store, Google Play, Microsoft Store) ne uklanjaju svaki rizik, ali ga značajno smanjuju. Kad možeš, preuzimaj direktno od proizvođača.",
     gameData: {
       stavke: [
         { id: "s1", tekst: "Preuzimanje s Google Play" },
@@ -593,7 +593,7 @@ export const SCENARIOS_DATA = [
         { id: "s6", tekst: "Softver 'besplatno' s cracking sajta" },
       ],
       kante: [
-        { id: "sigurno", naziv: "Sigurno ✓" },
+        { id: "sigurno", naziv: "Bezbjedno ✓" },
         { id: "rizicno", naziv: "Rizično ✗" },
       ],
     },
@@ -604,14 +604,14 @@ export const SCENARIOS_DATA = [
   },
   {
     topicSlug: "malver",
-    title: "Brzi test: Malver znanje",
+    title: "Brzi test: Malware znanje",
     interactionType: "brzi_krug",
     difficulty: "medium",
     xp: 75,
     order: 3,
-    tekst: "Brzi krug! Imaš 40 sekundi da odgovoriš na pitanja o zaštiti od malvera.",
-    hint: "Fokusiraj se na osnove: tipovi malvera, kako se širi, kako se zaštititi.",
-    objasnjenje: "Malver je opšti pojam za sve maliciozne programe: viruse, trojance, ransomware, spyware. Svaki tip ima drugačiji način ulaska i cilj. Redovni backup i ažurni antivirus su prva linija odbrane.",
+    tekst: "Brzi krug! Imaš 40 sekundi da odgovoriš na pitanja o zaštiti od malwarea.",
+    hint: "Fokusiraj se na osnove: vrste malwarea, kako se širi i kako se štitiš.",
+    objasnjenje: "Malware je opšti naziv za zlonamjerne programe: viruse, trojance, ransomware i spyware. Svaki tip ima drugačiji način ulaska i cilj. Redovan backup i ažuran antivirus su dobra prva linija odbrane.",
     gameData: {
       vrijemeSekundi: 40,
       pitanja: [
@@ -631,7 +631,7 @@ export const SCENARIOS_DATA = [
           tacno: 1,
         },
         {
-          tekst: "Ako dobiješ ransomware, šta ODMAH trebaš uraditi?",
+          tekst: "Ako dobiješ ransomware, šta ODMAH treba da uradiš?",
           opcije: ["Platiti otkupninu", "Formatirati disk", "Isključiti uređaj iz mreže", "Restartovati računar"],
           tacno: 2,
         },
@@ -645,14 +645,14 @@ export const SCENARIOS_DATA = [
   // ═══════════════════════════════════════════════════════════════════
   {
     topicSlug: "javni-wifi",
-    title: "Šta je sigurno na javnom WiFi-ju?",
+    title: "Šta je bezbjedno na javnom Wi-Fi-ju?",
     interactionType: "razvrstaj",
     difficulty: "easy",
     xp: 55,
     order: 1,
-    tekst: "Sjediš u kafiću na otvorenom WiFi-ju. Šta možeš raditi sigurno, a šta treba izbjegavati?",
-    hint: "Na otvorenom WiFi-ju neko može vidjeti sve što šalješ i primaš.",
-    objasnjenje: "Na otvorenom WiFi-ju napadač može presretati saobraćaj (man-in-the-middle napad). Aktivnosti bez osjetljivih podataka su relativno sigurne. Za bankarstvo i prijave — uvijek koristi mobilne podatke ili VPN.",
+    tekst: "Sjediš u kafiću na javnom Wi-Fi-ju. Šta možeš raditi bezbjedno, a šta treba izbjegavati?",
+    hint: "Na javnom Wi-Fi-ju neko može pokušati da vidi ili presretne podatke koje šalješ.",
+    objasnjenje: "Na javnom Wi-Fi-ju napadač može presretati saobraćaj (man-in-the-middle napad). Aktivnosti bez osjetljivih podataka su manje rizične. Za bankarstvo i prijave koristi mobilne podatke ili VPN.",
     gameData: {
       stavke: [
         { id: "s1", tekst: "Čitanje vijesti na HTTPS sajtovima" },
@@ -663,8 +663,8 @@ export const SCENARIOS_DATA = [
         { id: "s6", tekst: "Slanje lozinke kolegi putem emaila" },
       ],
       kante: [
-        { id: "sigurno", naziv: "OK za javni WiFi ✓" },
-        { id: "rizicno", naziv: "Izbjegavaj na javnom WiFi ✗" },
+        { id: "sigurno", naziv: "OK za javni Wi-Fi ✓" },
+        { id: "rizicno", naziv: "Izbjegavaj na javnom Wi-Fi ✗" },
       ],
     },
     correctData: {
@@ -674,21 +674,21 @@ export const SCENARIOS_DATA = [
   },
   {
     topicSlug: "javni-wifi",
-    title: "Podesite WiFi sigurnost",
+    title: "Podesi Wi-Fi zaštitu",
     interactionType: "podesi",
     difficulty: "medium",
     xp: 65,
     order: 2,
-    tekst: "Postavi sigurne WiFi postavke na svom uređaju.",
-    hint: "Što manje automatski dijeli, to manji rizik.",
-    objasnjenje: "Automatsko spajanje na otvorene mreže je rizično — uređaj se može spojiti na lažnu 'honeypot' mrežu bez tvog znanja. VPN šifruje sav saobraćaj čak i na nesigurnoj mreži. Dijeljenje datoteka na javnoj mreži otvara uređaj napadačima.",
+    tekst: "Postavi bezbjedne Wi-Fi opcije na svom uređaju.",
+    hint: "Što manje uređaj automatski dijeli, to je manji rizik.",
+    objasnjenje: "Automatsko spajanje na otvorene mreže je rizično — uređaj se može spojiti na lažnu 'honeypot' mrežu bez tvog znanja. VPN šifruje saobraćaj i na nesigurnoj mreži. Dijeljenje fajlova na javnoj mreži otvara uređaj napadačima.",
     gameData: {
-      uputstvo: "Postavi sigurne WiFi postavke.",
+      uputstvo: "Postavi bezbjedne Wi-Fi opcije.",
       opcije: [
-        { id: "o1", naziv: "Automatsko spajanje na otvorene mreže", opis: "Automatski se spaja na sve dostupne WiFi mreže", ikona: "📶", tacnoStanje: false },
-        { id: "o2", naziv: "VPN pri korišćenju javnog WiFi", opis: "Šifruje sav saobraćaj na javnim mrežama", ikona: "🔒", tacnoStanje: true },
+        { id: "o1", naziv: "Automatsko spajanje na otvorene mreže", opis: "Automatski se spaja na sve dostupne Wi-Fi mreže", ikona: "📶", tacnoStanje: false },
+        { id: "o2", naziv: "VPN na javnom Wi-Fi-ju", opis: "Šifruje saobraćaj na javnim mrežama", ikona: "🔒", tacnoStanje: true },
         { id: "o3", naziv: "Dijeljenje datoteka", opis: "Drugi uređaji na mreži mogu pristupiti tvojim fajlovima", ikona: "📁", tacnoStanje: false },
-        { id: "o4", naziv: "Firewall aktivan", opis: "Štiti od neovlaštenog pristupa", ikona: "🛡️", tacnoStanje: true },
+        { id: "o4", naziv: "Firewall aktivan", opis: "Štiti od neovlašćenog pristupa", ikona: "🛡️", tacnoStanje: true },
       ],
     },
     correctData: { ukljuceno: ["o2", "o4"], iskljuceno: ["o1", "o3"] },
@@ -700,15 +700,15 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 50,
     order: 3,
-    tekst: "Sjediš u kafiću i trebaš hitno napraviti uplatu. Koja je najsigurnija opcija?",
+    tekst: "Sjediš u kafiću i treba hitno da napraviš uplatu. Koja je najbezbjednija opcija?",
     hint: "Koji od ovih načina ne prolazi kroz nesigurnu mrežu kafića?",
-    objasnjenje: "Mobilni podaci (4G/5G) su šifrovani i ne prolaze kroz lokalnu WiFi mrežu, pa su sigurniji za bankarstvo. VPN na javnom WiFi-ju je prihvatljiva alternativa. Otvoreni WiFi bez VPN-a je rizičan za osjetljive transakcije.",
+    objasnjenje: "Mobilni podaci (4G/5G) su šifrovani i ne prolaze kroz lokalnu Wi-Fi mrežu, pa su bezbjedniji za bankarstvo. VPN na javnom Wi-Fi-ju je prihvatljiva alternativa. Otvoreni Wi-Fi bez VPN-a je rizičan za osjetljive transakcije.",
     gameData: {
       opcije: [
-        { id: "a", tekst: "Koristim kafićev WiFi — i ionako je HTTPS" },
+        { id: "a", tekst: "Koristim kafićev Wi-Fi — ionako je HTTPS" },
         { id: "b", tekst: "Čekam da dođem kući" },
         { id: "c", tekst: "Koristim mobilne podatke (4G/5G)" },
-        { id: "d", tekst: "Tražim od konobara WiFi lozinku — zaštićena mreža je sigurna" },
+        { id: "d", tekst: "Tražim od konobara Wi-Fi lozinku — zaštićena mreža je dovoljna" },
       ],
     },
     correctData: { id: "c" },
@@ -724,16 +724,16 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 60,
     order: 1,
-    tekst: "Podešavaš sigurnost svog naloga za email. Postavi sve opcije ispravno.",
+    tekst: "Podešavaš zaštitu svog email naloga. Postavi opcije ispravno.",
     hint: "2FA i automatska ažuriranja su uvijek dobri. 'Zapamti uređaj zauvijek' je rizično.",
-    objasnjenje: "2FA dodaje drugi sloj — i ako neko sazna lozinku, ne može ući bez drugog faktora. Authenticator aplikacija je sigurnija od SMS-a jer ne ovisi o mobilnoj mreži. 'Zapamti zauvijek' znači da svako ko uzme uređaj ima pristup nalogu.",
+    objasnjenje: "2FA dodaje drugi sloj zaštite — i ako neko sazna lozinku, ne može ući bez drugog faktora. Authenticator app je bezbjedniji od SMS-a jer ne zavisi od mobilne mreže. 'Zapamti zauvijek' znači da svako ko uzme uređaj može pristupiti nalogu.",
     gameData: {
-      uputstvo: "Postavi sigurnu autentifikaciju na nalog.",
+      uputstvo: "Postavi bezbjednu autentifikaciju na nalog.",
       opcije: [
         { id: "o1", naziv: "Dvofaktorska autentifikacija", opis: "Dodatni sloj zaštite pri svakoj prijavi", ikona: "🔐", tacnoStanje: true },
-        { id: "o2", naziv: "Authenticator aplikacija kao 2FA", opis: "Sigurnija od SMS-a, ne treba internet", ikona: "📱", tacnoStanje: true },
+        { id: "o2", naziv: "Authenticator app kao 2FA", opis: "Bezbjedniji od SMS-a i ne traži internet", ikona: "📱", tacnoStanje: true },
         { id: "o3", naziv: "Zapamti ovaj uređaj zauvijek", opis: "Ne traži 2FA na ovom uređaju više nikad", ikona: "💾", tacnoStanje: false },
-        { id: "o4", naziv: "Automatska ažuriranja aplikacije", opis: "Uvijek ažurna verzija = zakrpljene rupe", ikona: "🔄", tacnoStanje: true },
+        { id: "o4", naziv: "Automatska ažuriranja aplikacije", opis: "Ažurna verzija znači zakrpljene propuste", ikona: "🔄", tacnoStanje: true },
       ],
     },
     correctData: { ukljuceno: ["o1", "o2", "o4"], iskljuceno: ["o3"] },
@@ -747,13 +747,13 @@ export const SCENARIOS_DATA = [
     order: 2,
     tekst: "Koji oblik dvofaktorske autentifikacije je NAJSIGURNIJI?",
     hint: "Šta može presresti SMS? Šta ne može?",
-    objasnjenje: "SMS 2FA može biti ugrožen SIM swapping napadom gdje napadač prevari mobilnog operatera da prenese tvoj broj. Authenticator app generiše kodove lokalno bez interneta — nema što da se presretne. Hardware ključevi (poput YubiKey) su najodbranljiviji, ali Authenticator app je odlična opcija za većinu korisnika.",
+    objasnjenje: "SMS 2FA može biti ugrožen SIM swapping napadom, kada napadač prevari operatera da prebaci tvoj broj. Authenticator app generiše kodove na uređaju, pa nema SMS poruke koju neko može presresti. Hardware ključevi poput YubiKey su najjači, ali Authenticator app je odličan izbor za većinu korisnika.",
     gameData: {
       opcije: [
         { id: "a", tekst: "SMS kod na mobilni" },
         { id: "b", tekst: "Authenticator aplikacija (Google/Microsoft Authenticator)" },
         { id: "c", tekst: "Email potvrda" },
-        { id: "d", tekst: "Sigurnosno pitanje" },
+        { id: "d", tekst: "Bezbjednosno pitanje" },
       ],
     },
     correctData: { id: "b" },
@@ -766,18 +766,18 @@ export const SCENARIOS_DATA = [
     xp: 75,
     order: 3,
     tekst: "Dobio/la si poruku. Odaberi pravi odgovor!",
-    hint: "Legitimna podrška NIKAD ne traži verifikacione kodove ili lozinke.",
-    objasnjenje: "2FA kodovi su tajni ključevi koji važe samo jednom. Svaka osoba koja od tebe traži taj kod — bez obzira na to ko se predstavlja — pokušava preuzeti tvoj nalog. Legitimna kompanija NIKAD ne traži kod koji si dobio/la.",
+    hint: "Legitimna podrška NIKAD ne traži 2FA kodove ili lozinke.",
+    objasnjenje: "2FA kodovi su jednokratni i tajni. Svaka osoba koja od tebe traži taj kod — bez obzira na to kako se predstavlja — pokušava preuzeti tvoj nalog. Legitimna kompanija NIKAD ne traži kod koji si dobio/la.",
     gameData: {
       kontekst: "Primio/la si ovu poruku na Instagramu:",
       poruke: [
-        { od: "bot", tekst: "Hej! Ja sam Ana iz Instagram tima za podršku. Primjetili smo sumnjive aktivnosti na tvom nalogu. Trebam ti samo verifikacioni kod koji ti sada dolazi SMS-om da potvrdiš identitet." },
+        { od: "bot", tekst: "Hej! Ja sam Ana iz Instagram tima za podršku. Primijetili smo sumnjive aktivnosti na tvom nalogu. Treba mi samo verifikacioni kod koji ti sada dolazi SMS-om da potvrdimo identitet." },
         {
           od: "player",
           opcije: [
             { id: "a", tekst: "Ok, čekam kod pa ti šaljem.", tip: "lose" },
             { id: "b", tekst: "Legitimna podrška ne traži kodove. Ovo je prevara — blokiram te.", tip: "win" },
-            { id: "c", tekst: "A zašto trebaš kod? Objasni mi.", tip: "neutral" },
+            { id: "c", tekst: "A zašto ti treba kod? Objasni mi.", tip: "neutral" },
           ],
         },
       ],
@@ -797,15 +797,15 @@ export const SCENARIOS_DATA = [
     order: 1,
     tekst: "Zove te nepoznata osoba. Odaberi kako ćeš odgovoriti.",
     hint: "Pravi IT timovi nikad ne traže lozinke — imaju drugi pristup sistemu.",
-    objasnjenje: "Vishing (voice phishing) je napad telefonom gdje napadač glumi IT podršku, banku ili hitne službe. Legitimni IT timovi nikad ne trebaju tvoju lozinku — imaju admin pristup. Uvijek završi poziv i nazovi zvaničan broj firme da provjeriš.",
+    objasnjenje: "Vishing (voice phishing) je napad telefonom u kojem napadač glumi IT podršku, banku ili službu za hitne slučajeve. Pravi IT tim ne treba tvoju lozinku — ima druge načine za rad na sistemu. Završi poziv i nazovi zvaničan broj firme.",
     gameData: {
       kontekst: "Telefon zvoni. Nepoznati glas:",
       poruke: [
-        { od: "bot", tekst: "Dobar dan, zovem iz IT odjela vaše firme. Primjetili smo da vaš računar šalje sumnjive podatke na mrežu. Hitno mi trebate dati vašu lozinku za Windows da možemo pristupiti i riješiti problem." },
+        { od: "bot", tekst: "Dobar dan, zovem iz IT odjela vaše firme. Primijetili smo da vaš računar šalje sumnjive podatke na mrežu. Hitno mi treba vaša Windows lozinka da pristupimo uređaju i riješimo problem." },
         {
           od: "player",
           opcije: [
-            { id: "a", tekst: "Dati im lozinku — zvuče legitmno i ozbiljno.", tip: "lose" },
+            { id: "a", tekst: "Dati im lozinku — zvuče legitimno i ozbiljno.", tip: "lose" },
             { id: "b", tekst: "Reći da ću prekinuti poziv i nazvati IT odjel na zvaničnom broju.", tip: "win" },
             { id: "c", tekst: "Pitati za njihov ID broj pa onda odlučiti.", tip: "neutral" },
           ],
@@ -845,15 +845,15 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 55,
     order: 3,
-    tekst: "Primio/la si poruku na Viberu: 'Hej, ja sam tvoj brat Marko. Izgubio sam novčanik. Pošalji mi hitno 100€ na ovaj broj...' Šta radiš?",
-    hint: "Može li nalog biti kompromitovan? Kako provjeriš da je zaista brat?",
-    objasnjenje: "Napadači kompromituju naloge i šalju poruke svim kontaktima računajući na hitnost. Najvažniji korak je verifikacija identiteta kroz kanal koji kontrolišeš — nazovi brata direktno. Nikad ne šalji novac samo na osnovu tekstualne poruke.",
+    tekst: "Primio/la si poruku na Viberu: 'Hej, ja sam tvoj brat Marko. Izgubio sam novčanik. Pošalji mi hitno 100 € na ovaj broj...' Šta radiš?",
+    hint: "Može li nalog biti kompromitovan? Kako provjeravaš da je to zaista brat?",
+    objasnjenje: "Napadači kompromituju naloge i šalju poruke svim kontaktima, računajući na paniku i hitnost. Najvažniji korak je provjera identiteta kroz kanal koji kontrolišeš — nazovi brata direktno. Nikad ne šalji novac samo na osnovu poruke.",
     gameData: {
       opcije: [
         { id: "a", tekst: "Odmah pošaljem novac — brat je u nevolji!" },
         { id: "b", tekst: "Pitam ga nešto što samo brat zna" },
         { id: "c", tekst: "Nazovem brata direktno na poznati broj" },
-        { id: "d", tekst: "Ignoriram poruku" },
+        { id: "d", tekst: "Ignorišem poruku" },
       ],
     },
     correctData: { id: "c" },
@@ -870,8 +870,8 @@ export const SCENARIOS_DATA = [
     xp: 55,
     order: 1,
     tekst: "Dobio/la si poruku. Odaberi odgovor!",
-    hint: "Legitmne nagradne igre ne traže uplatu niti lične podatke putem poruke.",
-    objasnjenje: "Prevare s nagradama uvijek imaju istu strukturu: 'pobijedio/la si', ali trebaš nešto platiti ili dati podatke da dobiješ nagradu. Legitiman dobitnik ne plaća ništa za dobivanje nagrade. Tipični znakovi: nespojivi 'sponzori', hitnost, zahtjev za podacima.",
+    hint: "Legitimne nagradne igre ne traže uplatu niti lične podatke putem poruke.",
+    objasnjenje: "Prevare s nagradama obično imaju istu strukturu: 'dobio/la si', ali moraš nešto platiti ili poslati podatke da preuzmeš nagradu. Legitiman dobitnik ne plaća ništa da bi dobio nagradu. Tipični znakovi su čudni 'sponzori', hitnost i zahtjev za podacima.",
     gameData: {
       kontekst: "Primio/la si ovu poruku na Facebooku:",
       poruke: [
@@ -879,8 +879,8 @@ export const SCENARIOS_DATA = [
         {
           od: "player",
           opcije: [
-            { id: "a", tekst: "Platim poštarinu — 15€ je malo za iPhone!", tip: "lose" },
-            { id: "b", tekst: "Ovo je prevara — blokiram profil i prijavim Facebook-u.", tip: "win" },
+            { id: "a", tekst: "Platim poštarinu — 15 € je malo za iPhone!", tip: "lose" },
+            { id: "b", tekst: "Ovo je prevara — blokiram profil i prijavim Facebooku.", tip: "win" },
             { id: "c", tekst: "Pitam da mi pošalju više detalja o nagradnoj igri.", tip: "neutral" },
           ],
         },
@@ -896,13 +896,13 @@ export const SCENARIOS_DATA = [
     xp: 65,
     order: 2,
     tekst: "Tražiš Nike patike online. Koja od ovih web stranica je legitimna?",
-    hint: "Poglej domen, cijenu i dizajn stranice pažljivo.",
+    hint: "Pažljivo pogledaj domen, cijenu i dizajn stranice.",
     objasnjenje: "Lažne prodavnice imitiraju dizajn poznatih brendova, ali koriste sumnjive domene i nude nerealno niske cijene da bi privukle kupce. Uvijek kupuj direktno sa zvanične stranice ili kod provjerenih prodavaca. Ako cijena zvuči previše dobro — vjerovatno je prevara.",
     gameData: {
       tip: "url",
       uputstvo: "Koja od ovih stranica je legitimna prodavnica?",
-      a: { tekst: "https://www.nike.com/ba (Nike zvanični sajt, cijena 150€)", oznaka: "A" },
-      b: { tekst: "http://nike-outlet-shop.tk (Nike MEGA RASPRODAJA, patike 15€!)", oznaka: "B" },
+      a: { tekst: "https://www.nike.com/ba (Nike zvanični sajt, cijena 150 €)", oznaka: "A" },
+      b: { tekst: "http://nike-outlet-shop.tk (Nike MEGA RASPRODAJA, patike 15 €!)", oznaka: "B" },
     },
     correctData: { tacno: "a" },
   },
@@ -913,12 +913,12 @@ export const SCENARIOS_DATA = [
     difficulty: "medium",
     xp: 65,
     order: 3,
-    tekst: "Na Instagramu ti se javlja 'influencer' i nudi garantovan prinos od 300% u kriptovalutama za 24 sata. Traži početnu uplatu od 100€. Šta radiš?",
+    tekst: "Na Instagramu ti se javlja 'influencer' i nudi garantovan prinos od 300% u kriptovalutama za 24 sata. Traži početnu uplatu od 100 €. Šta radiš?",
     hint: "Postoji li zakoniti finansijski instrument koji garantuje 300% prinos?",
-    objasnjenje: "Crypto investicijske prevare (Ponzi sheme, pump-and-dump) obećavaju nerealne prinose koji su finansijski nemogući. 'Garantovana zarada' je uvijek laž — tržišta ne garantuju ništa. Novac jednom uplaćen u ove sheme rijetko se vraća. Prijavljivanje ovakvih profila je odgovoran potez.",
+    objasnjenje: "Crypto investicione prevare (Ponzi sheme, pump-and-dump) obećavaju nerealne prinose koji u praksi nisu održivi. 'Garantovana zarada' je uvijek crvena zastavica — tržišta ne garantuju ništa. Novac uplaćen u ovakve sheme rijetko se vraća. Prijavljivanje profila je odgovoran potez.",
     gameData: {
       opcije: [
-        { id: "a", tekst: "Uplatim 100€ — 300% prinos je odlično!" },
+        { id: "a", tekst: "Uplatim 100 € — 300% prinos zvuči odlično!" },
         { id: "b", tekst: "Pitam za detalje i referencije" },
         { id: "c", tekst: "Prepoznajem ovo kao Ponzi prevaru i prijavim profil" },
         { id: "d", tekst: "Uplatim manji iznos kao test" },
@@ -937,14 +937,14 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 55,
     order: 1,
-    tekst: "Podesi sistem da bude uvijek zaštićen od poznatih ranjivosti.",
+    tekst: "Podesi sistem tako da se brzo štiti od poznatih ranjivosti.",
     hint: "Automatski je uvijek bolje od ručnog — ranjivosti se mogu iskoristiti u satima od objave.",
-    objasnjenje: "Napadači eksploatišu poznate ranjivosti odmah nakon objave sigurnosnih ažuriranja jer znaju da mnogi korisnici ne ažuriraju brzo. Automatska ažuriranja drže tebe ispred napadača. Samo zastarjeli softver bez podrške ne treba ažurirati — treba ga zamijeniti.",
+    objasnjenje: "Napadači često iskorišćavaju poznate ranjivosti odmah nakon objave bezbjednosnih ažuriranja, jer znaju da mnogi korisnici kasne. Automatska ažuriranja drže te korak ispred. Softver koji više nema podršku ne treba samo ažurirati — treba ga zamijeniti.",
     gameData: {
-      uputstvo: "Postavi sigurne opcije ažuriranja sistema.",
+      uputstvo: "Postavi bezbjedne opcije ažuriranja sistema.",
       opcije: [
         { id: "o1", naziv: "Automatska ažuriranja OS-a", opis: "Sistem se automatski ažurira noću", ikona: "🔄", tacnoStanje: true },
-        { id: "o2", naziv: "Automatska ažuriranja aplikacija", opis: "Aplikacije se ažuriraju bez tvojeg odobrenja", ikona: "📱", tacnoStanje: true },
+        { id: "o2", naziv: "Automatska ažuriranja aplikacija", opis: "Aplikacije se ažuriraju bez posebnog odobrenja", ikona: "📱", tacnoStanje: true },
         { id: "o3", naziv: "Odgodi ažuriranja za 30 dana", opis: "Čekaš 30 dana prije instalacije", ikona: "⏱️", tacnoStanje: false },
         { id: "o4", naziv: "Obavještenja o ažuriranjima", opis: "Prima obavještenja kada su ažuriranja dostupna", ikona: "🔔", tacnoStanje: true },
       ],
@@ -953,14 +953,14 @@ export const SCENARIOS_DATA = [
   },
   {
     topicSlug: "azuriranja",
-    title: "Zanemariti sigurnosno ažuriranje?",
+    title: "Zanemariti bezbjednosno ažuriranje?",
     interactionType: "odluka",
     difficulty: "easy",
     xp: 50,
     order: 2,
-    tekst: "Tvoj laptop zahtijeva hitno sigurnosno ažuriranje za kritičnu ranjivost. Treba mu 10 minuta. Šta radiš?",
+    tekst: "Tvoj laptop traži hitno bezbjednosno ažuriranje zbog kritične ranjivosti. Traje 10 minuta. Šta radiš?",
     hint: "Koliko brzo napadači iskorišćavaju poznate ranjivosti nakon objave zakrpe?",
-    objasnjenje: "Sigurnosna ažuriranja se objavljuju jer je ranjivost otkrivena — i napadači to znaju odmah. Tzv. 'exploit race' počinje istog dana: napadači razvijaju napade dok korisnici odgađaju ažuriranje. 10 minuta za zakrpu je uvijek isplativo.",
+    objasnjenje: "Bezbjednosna ažuriranja se objavljuju zato što je ranjivost otkrivena — i napadači to znaju odmah. 'Exploit race' počinje istog dana: napadači razvijaju napade dok korisnici odgađaju ažuriranje. Deset minuta za zakrpu je uvijek dobra odluka.",
     gameData: {
       opcije: [
         { id: "a", tekst: "Zanemarim notifikaciju — ažurirati mogu i sutra" },
@@ -979,18 +979,18 @@ export const SCENARIOS_DATA = [
     xp: 65,
     order: 3,
     tekst: "Brzi krug o ažuriranjima! Imaš 35 sekundi.",
-    hint: "Ažuriranja nisu samo nova funkcionalnost — primarno su sigurnosne zakrpe.",
-    objasnjenje: "Ažuriranja softvera su kritična za sigurnost. Procjena je da 60% uspješnih napada eksploatiše već poznate ranjivosti za koje postoje zakrpe. Najsigurniji korisnici su oni koji ažuriraju brzo i automatski.",
+    hint: "Ažuriranja nisu samo nove funkcije — često su najvažnije bezbjednosne zakrpe.",
+    objasnjenje: "Ažuriranja softvera su važna za bezbjednost jer zatvaraju poznate ranjivosti. Najbezbjedniji korisnici su oni koji ažuriraju brzo i, gdje je moguće, automatski.",
     gameData: {
       vrijemeSekundi: 35,
       pitanja: [
         {
-          tekst: "Zašto su sigurnosna ažuriranja važna?",
-          opcije: ["Dodaju nove funkcije", "Krpe sigurnosne rupe", "Ubrzavaju računar", "Štede bateriju"],
+          tekst: "Zašto su bezbjednosna ažuriranja važna?",
+          opcije: ["Dodaju nove funkcije", "Krpe bezbjednosne rupe", "Ubrzavaju računar", "Štede bateriju"],
           tacno: 1,
         },
         {
-          tekst: "Koliko brzo trebas primijeniti kritično sigurnosno ažuriranje?",
+          tekst: "Koliko brzo treba primijeniti kritično bezbjednosno ažuriranje?",
           opcije: ["U roku od godine", "Što prije moguće", "Nije bitno", "Nakon sedam dana"],
           tacno: 1,
         },
@@ -1014,8 +1014,8 @@ export const SCENARIOS_DATA = [
     difficulty: "easy",
     xp: 50,
     order: 1,
-    tekst: "Trebaš besplatni program za uređivanje fotografija. Na forumu vidiš 'crack' verziju skupog softvera. Šta radiš?",
-    hint: "Zašto bi neko 'besplatno' dijelio softver koji košta 200€?",
+    tekst: "Treba ti besplatan program za uređivanje fotografija. Na forumu vidiš 'crack' verziju skupog softvera. Šta radiš?",
+    hint: "Zašto bi neko 'besplatno' dijelio softver koji košta 200 €?",
     objasnjenje: "Piratski softver (cracks, keygens) je jedan od najčešćih načina širenja malwarea. Osoba koja dijeli crack zapravo distribuira zaraženi fajl. Postoji mnoštvo legitimnih besplatnih alternativa (GIMP umjesto Photoshop, VLC za medije). Uvijek koristi zvaničan izvor.",
     gameData: {
       opcije: [
@@ -1029,14 +1029,14 @@ export const SCENARIOS_DATA = [
   },
   {
     topicSlug: "sigurno-preuzimanje",
-    title: "Sigurni vs nesigurni izvori",
+    title: "Bezbjedni ili rizični izvori",
     interactionType: "razvrstaj",
     difficulty: "medium",
     xp: 65,
     order: 2,
-    tekst: "Razvrstavaj izvore preuzimanja — koji su sigurni, a koji su rizični?",
+    tekst: "Razvrstaj izvore preuzimanja na bezbjedne i rizične.",
     hint: "Zvanični izvori imaju recenzije, potpisane aplikacije i sisteme provjere.",
-    objasnjenje: "Zvanične prodavnice i stranice proizvođača verificiraju aplikacije. Treće strane i torrent sajtovi nemaju nikakvu provjeru — malware se slobodno širi. Čak i na Google Play-u postoji mali broj malicioznih aplikacija, ali je rizik daleko manji nego s nesigurnih izvora.",
+    objasnjenje: "Zvanične prodavnice i stranice proizvođača provjeravaju aplikacije. Treće strane i torrent sajtovi nemaju takvu kontrolu — malware se tamo mnogo lakše širi. Čak i na Google Play-u može proći loša aplikacija, ali je rizik daleko manji nego na nepoznatim izvorima.",
     gameData: {
       stavke: [
         { id: "s1", tekst: "Apple App Store" },
@@ -1047,7 +1047,7 @@ export const SCENARIOS_DATA = [
         { id: "s6", tekst: "Warez forum" },
       ],
       kante: [
-        { id: "sigurno", naziv: "Siguran izvor ✓" },
+        { id: "sigurno", naziv: "Bezbjedan izvor ✓" },
         { id: "rizicno", naziv: "Rizičan izvor ✗" },
       ],
     },
@@ -1065,7 +1065,7 @@ export const SCENARIOS_DATA = [
     order: 3,
     tekst: "Tražiš gdje preuzeti aplikaciju. Koja od ove dvije opcije je legitimni Google Play?",
     hint: "Pazi na domen i dizajn — lažni Google Play sajtovi su često savršene kopije.",
-    objasnjenje: "Lažni app store sajtovi su dizajnirani da izgledaju identično kao originalni. Jedina sigurna provjera je domen: pravi Google Play je isključivo play.google.com. Svaki drugi domen je lažan, bez obzira na to koliko identično izgleda. Na telefonu — uvijek koristi ugrađenu Play Store aplikaciju.",
+    objasnjenje: "Lažni app store sajtovi su dizajnirani da izgledaju identično kao originalni. Jedina pouzdana provjera je domen: pravi Google Play je isključivo play.google.com. Svaki drugi domen je lažan, bez obzira na to koliko identično izgleda. Na telefonu — uvijek koristi ugrađenu Play Store aplikaciju.",
     gameData: {
       tip: "url",
       uputstvo: "Koji link vodi na pravi Google Play?",
