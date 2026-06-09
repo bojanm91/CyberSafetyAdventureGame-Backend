@@ -2,6 +2,9 @@
   "name": "csag-backend",
   "private": true,
   "version": "0.1.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json --incremental false",
     "start": "npm run build && node dist/main",

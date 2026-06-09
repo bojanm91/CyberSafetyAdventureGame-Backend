@@ -23,7 +23,10 @@ export class ScheduledNotificationsService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
-  @Cron("0 18 * * *", { timeZone: SCHEDULE_TIME_ZONE })
+  @Cron("0 18 * * *", {
+    name: "daily-challenge-push-reminder",
+    timeZone: SCHEDULE_TIME_ZONE,
+  })
   async sendDailyChallengeReminder() {
     if (this.isDisabled()) return;
 
@@ -49,7 +52,10 @@ export class ScheduledNotificationsService {
     this.logger.log(`Daily challenge podsjetnik poslat korisnicima: ${sentUsers}/${users.length}`);
   }
 
-  @Cron("0 19 * * *", { timeZone: SCHEDULE_TIME_ZONE })
+  @Cron("0 19 * * *", {
+    name: "comeback-push-reminder",
+    timeZone: SCHEDULE_TIME_ZONE,
+  })
   async sendComebackReminder() {
     if (this.isDisabled()) return;
 
