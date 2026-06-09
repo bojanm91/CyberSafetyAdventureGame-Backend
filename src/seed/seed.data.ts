@@ -81,7 +81,7 @@ export const QUESTS_DATA = [
     miniConclusion: ".exe od nepoznatog pošiljaoca = ne otvarati nikad. Legitimne fakture dolaze kao PDF.",
     options: [
       { text: "Otvoriti fajl — vjerovatno je zaista faktura", isCorrect: false, explanation: "Otvaranje .exe fajla od nepoznate adrese može odmah zaraziti računar malwareom.", order: 1 },
-      { text: "Provjeriti pošiljaoca, ekstenziju fajla i skenirati antivirusom", isCorrect: true, explanation: "Provjera i skeniranje su ispravni koraci — ali sumnjivi .exe je bolje obrisati.", order: 2 },
+      { text: "Ne otvarati prilog, provjeriti pošiljaoca i obrisati/prijaviti email", isCorrect: true, explanation: "Sumnjiv .exe od nepoznatog pošiljaoca se ne otvara — najbezbjednije je ne dirati prilog, provjeriti pošiljaoca i prijaviti poruku kao spam.", order: 2 },
       { text: "Preimenovati fajl iz .exe u .pdf i tada ga otvoriti", isCorrect: false, explanation: "Preimenovanje ne mijenja sadržaj fajla.", order: 3 },
       { text: "Proslijediti fajl kolegi da on provjeri", isCorrect: false, explanation: "Prosljeđivanjem potencijalnog malwarea ugrožavaš kolegu.", order: 4 },
     ],
@@ -135,6 +135,15 @@ export const GAME_BADGES_DATA = [
 ];
 
 export const GAME_TOPICS_DATA = [
+  {
+    slug: "akademija",
+    name: "Akademija",
+    opis: "Početak putanje — osnove sajber bezbjednosti uz Bajta. Uvijek dostupno za vježbu.",
+    lekcija: "Dobrodošao u Akademiju Sajber Čuvara. Ovdje vježbaš osnove: prepoznavanje mamaca, pravljenje jakih lozinki, uočavanje lažnih linkova i dvofaktorsku zaštitu. Pravilo broj jedan: stani i pomisli sekundu prije nego što klikneš. Ova pitanja su uvijek tu — vrati se kad god želiš da osvježiš osnove.",
+    ikona: "★",
+    colorClass: "from-orange/20 to-orange/5 border-orange/25",
+    order: 9,
+  },
   {
     slug: "lozinke",
     name: "Lozinke",
@@ -231,6 +240,90 @@ export const GAME_TOPICS_DATA = [
 // odluka, phishing_inbox, lozinka, razvrstaj, pravo_lazno, razgovor, podesi, brzi_krug
 
 export const SCENARIOS_DATA = [
+  // ═══════════════════════════════════════════════════════════════════
+  // 0. AKADEMIJA (uvodna pitanja — uvijek dostupna)
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    topicSlug: "akademija",
+    title: "Prvi mamac",
+    interactionType: "odluka",
+    difficulty: "easy",
+    xp: 40,
+    order: 1,
+    tekst: "Bajt te uvodi u Akademiju. Na ekranu iskoči poruka: „Izabran si za nagradu od 10.000 €! Klikni ODMAH da preuzmeš!“ Šta radiš?",
+    hint: "Zapitaj se: zašto bi ti neko poklonio 10.000 € bez razloga?",
+    objasnjenje: "Predobra ponuda + hitnost + zahtjev da odmah klikneš = klasičan mamac. Pravi pokloni te ne jure sa tajmerom. Kad nešto zvuči predobro da bi bilo istinito, najčešće i jeste prevara. Stani i pomisli sekundu prije klika.",
+    gameData: {
+      opcije: [
+        { id: "a", tekst: "Kliknem odmah — ko bi propustio 10.000 €!" },
+        { id: "b", tekst: "Ignorišem — niko ne dijeli 10.000 € bez razloga." },
+        { id: "c", tekst: "Unesem svoje podatke da provjerim je li stvarno." },
+        { id: "d", tekst: "Proslijedim poruku prijateljima da i oni dobiju nagradu." },
+      ],
+    },
+    correctData: { id: "b" },
+  },
+  {
+    topicSlug: "akademija",
+    title: "Tvoja prva lozinka",
+    interactionType: "odluka",
+    difficulty: "easy",
+    xp: 40,
+    order: 2,
+    tekst: "Praviš prvu lozinku za svoj nalog u Akademiji. Koja je od ovih najsigurnija?",
+    hint: "Dužina i nepovezane riječi jače su od kratke „komplikovane“ lozinke.",
+    objasnjenje: "Duga fraza od nepovezanih riječi teža je za probijanje od kratke lozinke s par simbola. Imena, datumi i „lozinka123“ prve su kombinacije koje napadači probaju. Pravilo: što duže i nepredvidivije, to bolje — i koristi jedinstvenu lozinku za svaki nalog.",
+    gameData: {
+      opcije: [
+        { id: "a", tekst: "marko2005" },
+        { id: "b", tekst: "lozinka123" },
+        { id: "c", tekst: "konj-baterija-spajalica-7" },
+        { id: "d", tekst: "12345678" },
+      ],
+    },
+    correctData: { id: "c" },
+  },
+  {
+    topicSlug: "akademija",
+    title: "Koji link je pravi?",
+    interactionType: "odluka",
+    difficulty: "easy",
+    xp: 40,
+    order: 3,
+    tekst: "Dobiješ poruku s linkom za prijavu na nalog Akademije. Koji link je pravi i siguran?",
+    hint: "Pažljivo pročitaj cijeli domen — slovo po slovo, naročito ono ispred prve kose crte.",
+    objasnjenje: "Lažni linkovi mijenjaju slova (1 umjesto i), dodaju riječi (-verify, -secure) ili koriste čudne ekstenzije (.tk, .xyz). Pravi domen je ono što stoji neposredno ispred prve „/“. Kad sumnjaš — ne klikaj, nego ručno otvori zvaničnu stranicu.",
+    gameData: {
+      opcije: [
+        { id: "a", tekst: "https://akademija-cuvara.rs/prijava" },
+        { id: "b", tekst: "http://akademija-cuvara-verify.tk/login" },
+        { id: "c", tekst: "https://akadem1ja-cuvara.rs/prijava" },
+        { id: "d", tekst: "http://akademija.login-sada.xyz" },
+      ],
+    },
+    correctData: { id: "a" },
+  },
+  {
+    topicSlug: "akademija",
+    title: "Drugi sloj zaštite",
+    interactionType: "odluka",
+    difficulty: "easy",
+    xp: 40,
+    order: 4,
+    tekst: "Bajt ti predlaže da uključiš dvofaktorsku zaštitu (2FA). Šta je tačno o 2FA?",
+    hint: "Šta se desi ako neko sazna tvoju lozinku, a ti imaš uključen i drugi faktor?",
+    objasnjenje: "2FA dodaje drugi sloj — kod iz aplikacije ili poruke koji samo ti imaš. I ako napadač sazna lozinku, bez drugog faktora ne može da uđe. Authenticator aplikacija je sigurnija od SMS-a. Uvijek uključi 2FA gdje god je dostupna.",
+    gameData: {
+      opcije: [
+        { id: "a", tekst: "Nepotrebna je ako imam jaku lozinku." },
+        { id: "b", tekst: "Traži drugi korak pri prijavi, pa napadač ne može ući samo sa lozinkom." },
+        { id: "c", tekst: "Usporava prijavu i ne donosi nikakvu korist." },
+        { id: "d", tekst: "Znači da svoju lozinku mogu mirno dijeliti s prijateljima." },
+      ],
+    },
+    correctData: { id: "b" },
+  },
+
   // ═══════════════════════════════════════════════════════════════════
   // 1. LOZINKE
   // ═══════════════════════════════════════════════════════════════════
@@ -348,7 +441,7 @@ export const SCENARIOS_DATA = [
     xp: 80,
     order: 3,
     tekst: "Imaš 45 sekundi! Odgovori na sva pitanja o prepoznavanju phishinga što brže možeš.",
-    hint: "Nemoj razmišljati predugo — prouči svako pitanje i biraju instinktivno.",
+    hint: "Nemoj razmišljati predugo — pročitaj svako pitanje i biraj instinktivno.",
     objasnjenje: "Brzo prepoznavanje phishinga je vještina — što više vježbaš, to lakše uočavaš crvene zastavice na intuitivnom nivou. Klj. znakovi: lažni domen, hitnost, zahtjev za podacima, greške u tekstu.",
     gameData: {
       vrijemeSekundi: 45,
@@ -375,7 +468,7 @@ export const SCENARIOS_DATA = [
         },
         {
           tekst: "Koji link je siguran?",
-          opcije: ["http://banka-secure.tk/login", "https://banka.ba/login", "banka-login.com", "http://198.51.100.1/login"],
+          opcije: ["http://banka-secure.tk/login", "https://banka.rs/login", "banka-login.com", "http://198.51.100.1/login"],
           tacno: 1,
         },
       ],
@@ -424,7 +517,7 @@ export const SCENARIOS_DATA = [
     order: 2,
     tekst: "Podesi privatnost na pametnom telefonu. Uključi ono što povećava privatnost, isključi ono što je smanjuje.",
     hint: "Manje dozvola = manje podataka koje aplikacije skupljaju.",
-    objasnjenje: "Aplikacije skupljaju daleko više podataka nego što im treba. Lokacija u pozadini je rijetko potrebna. Reklamni ID može biti resetovan da se ograniči praćenje. Pregled privatnosti korisnih je provjeriti redovno.",
+    objasnjenje: "Aplikacije skupljaju daleko više podataka nego što im treba. Lokacija u pozadini je rijetko potrebna. Reklamni ID možeš resetovati da ograničiš praćenje. Korisno je redovno provjeravati postavke privatnosti.",
     gameData: {
       uputstvo: "Postavi sigurne privatnost opcije.",
       opcije: [
@@ -473,7 +566,7 @@ export const SCENARIOS_DATA = [
     gameData: {
       opcije: [
         { id: "a", tekst: "Otvorim prilog — vjerovatno je zaista faktura" },
-        { id: "b", tekst: "Preimenujm ga iz .exe u .pdf pa otvaram" },
+        { id: "b", tekst: "Preimenujem ga iz .exe u .pdf pa ga otvaram" },
         { id: "c", tekst: "Provjerim pošiljaoca, ne otvorim prilog i prijavim kao spam" },
         { id: "d", tekst: "Proslijedim kolegi da provjeri" },
       ],
@@ -487,14 +580,14 @@ export const SCENARIOS_DATA = [
     difficulty: "medium",
     xp: 70,
     order: 2,
-    tekst: "Razvrstvaj — koji načini preuzimanja softvera su sigurni, a koji su rizični?",
+    tekst: "Razvrstaj — koji načini preuzimanja softvera su sigurni, a koji su rizični?",
     hint: "Zvanični izvori imaju sistem provjere aplikacija. Torrent i nepoznati sajtovi — nemaju.",
     objasnjenje: "Malware se najčešće širi kroz piratski softver i aplikacije iz neslužbenih izvora. Zvanične prodavnice (App Store, Google Play, Microsoft Store) imaju sisteme provjere koji ne uklanjaju sve malware, ali drastično smanjuju rizik. Uvijek preuzimaj direktno s web stranice proizvođača.",
     gameData: {
       stavke: [
         { id: "s1", tekst: "Preuzimanje s Google Play" },
         { id: "s2", tekst: "Torrent fajl s piratske stranice" },
-        { id: "s3", tekst: "Direktno s oficijalne stranice proizvođača" },
+        { id: "s3", tekst: "Direktno sa zvanične stranice proizvođača" },
         { id: "s4", tekst: "APK fajl s nepoznatog foruma" },
         { id: "s5", tekst: "Preuzimanje s Microsoft Store" },
         { id: "s6", tekst: "Softver 'besplatno' s cracking sajta" },
@@ -732,12 +825,12 @@ export const SCENARIOS_DATA = [
     hint: "Pažljivo provjeri link, pošiljaoca i ton poruke.",
     objasnjenje: "Smishing (SMS phishing) je sve češći jer smo navikli vjerovati SMS-ovima. Banka nikad ne šalje SMS-om link da uneseš podatke — koristi svoju zvaničnu aplikaciju ili web stranicu. Svaki SMS koji traži hitnu akciju s linkom je sumnjiv.",
     gameData: {
-      od: "BankaRS",
+      od: "Banka",
       naslov: "SMS poruka",
-      tijelo: "HITNO: Vaša debitna kartica je BLOKIRANA zbog sumnjive transakcije od 847KM! Da deblokujete karticu kliknite ODMAH: http://banka-rs-verify.tk/deblok i unesite podatke kartice. Rok: 2 sata!",
-      link: "http://banka-rs-verify.tk/deblok",
+      tijelo: "HITNO: Vaša debitna kartica je BLOKIRANA zbog sumnjive transakcije od 847 €! Da deblokirate karticu kliknite ODMAH: http://banka-verify.tk/deblok i unesite podatke kartice. Rok: 2 sata!",
+      link: "http://banka-verify.tk/deblok",
       zastavice: [
-        { id: "z1", tekst: "Lažni domen u linku (.tk nije domena banke)", element: "link" },
+        { id: "z1", tekst: "Lažni domen u linku (.tk nije domen banke)", element: "link" },
         { id: "z2", tekst: "Vještačka hitnost i prijetnja (2 sata!)", element: "tijelo" },
         { id: "z3", tekst: "Traži unos podataka kartice putem linka", element: "tijelo" },
         { id: "z4", tekst: "Iznos transakcije je specifičan da stvori paniku", element: "tijelo" },
@@ -782,7 +875,7 @@ export const SCENARIOS_DATA = [
     gameData: {
       kontekst: "Primio/la si ovu poruku na Facebooku:",
       poruke: [
-        { od: "bot", tekst: "Čestitamo! 🎉 Izabrani ste kao dobitnik iPhone 15 u našoj nagradnoj igri sponzoriranoj od strane Apple-a! Da preuzmete nagradu, trebate platiti poštarinu od 15€ i poslati nam osobnu iskaznicu za potvrdu identiteta." },
+        { od: "bot", tekst: "Čestitamo! 🎉 Izabrani ste kao dobitnik iPhone-a 15 u nagradnoj igri koju sponzoriše Apple! Da preuzmete nagradu, treba da platite poštarinu od 15 € i pošaljete nam ličnu kartu radi potvrde identiteta." },
         {
           od: "player",
           opcije: [
@@ -804,7 +897,7 @@ export const SCENARIOS_DATA = [
     order: 2,
     tekst: "Tražiš Nike patike online. Koja od ovih web stranica je legitimna?",
     hint: "Poglej domen, cijenu i dizajn stranice pažljivo.",
-    objasnjenje: "Lažne prodavnice imitiraju dizajn poznatih brendova ali koriste sumnjive domene i nude nerealno niske cijene da bi privukli kupce. Uvijek kupuj direktno s oficijalne stranice ili poznatih prodavnica. Ako cijena zvuči previše dobro — vjerovatno jest prevara.",
+    objasnjenje: "Lažne prodavnice imitiraju dizajn poznatih brendova, ali koriste sumnjive domene i nude nerealno niske cijene da bi privukle kupce. Uvijek kupuj direktno sa zvanične stranice ili kod provjerenih prodavaca. Ako cijena zvuči previše dobro — vjerovatno je prevara.",
     gameData: {
       tip: "url",
       uputstvo: "Koja od ovih stranica je legitimna prodavnica?",
@@ -822,7 +915,7 @@ export const SCENARIOS_DATA = [
     order: 3,
     tekst: "Na Instagramu ti se javlja 'influencer' i nudi garantovan prinos od 300% u kriptovalutama za 24 sata. Traži početnu uplatu od 100€. Šta radiš?",
     hint: "Postoji li zakoniti finansijski instrument koji garantuje 300% prinos?",
-    objasnjenje: "Crypto investicijske prevare (Ponzi sheme, pump-and-dump) obećavaju nerealne prinose koji su finansijski nemoguće. 'Garantovana zarada' je uvijek laž — tržišta ne garantuju ništa. Novac jednom uplaćen u ove sheme rijetko se vraća. Prijaviti ovakve profile je odgovornosti.",
+    objasnjenje: "Crypto investicijske prevare (Ponzi sheme, pump-and-dump) obećavaju nerealne prinose koji su finansijski nemogući. 'Garantovana zarada' je uvijek laž — tržišta ne garantuju ništa. Novac jednom uplaćen u ove sheme rijetko se vraća. Prijavljivanje ovakvih profila je odgovoran potez.",
     gameData: {
       opcije: [
         { id: "a", tekst: "Uplatim 100€ — 300% prinos je odlično!" },
@@ -871,7 +964,7 @@ export const SCENARIOS_DATA = [
     gameData: {
       opcije: [
         { id: "a", tekst: "Zanemarim notifikaciju — ažurirati mogu i sutra" },
-        { id: "b", tekst: "Odaberem 'Podsjeti me za 1 tjedan'" },
+        { id: "b", tekst: "Odaberem 'Podsjeti me za 7 dana'" },
         { id: "c", tekst: "Ažuriram odmah — 10 minuta nije puno" },
         { id: "d", tekst: "Deaktiviram automatska ažuriranja — smetaju mi" },
       ],
@@ -898,12 +991,12 @@ export const SCENARIOS_DATA = [
         },
         {
           tekst: "Koliko brzo trebas primijeniti kritično sigurnosno ažuriranje?",
-          opcije: ["U roku od godine", "Što prije moguće", "Nije bitno", "Nakon tjedan dana"],
+          opcije: ["U roku od godine", "Što prije moguće", "Nije bitno", "Nakon sedam dana"],
           tacno: 1,
         },
         {
           tekst: "Koji softver je NAJVAŽNIJE redovno ažurirati?",
-          opcije: ["Igrice", "Operativni sistem i preglednik", "Pozadinska slika", "Screensaver"],
+          opcije: ["Igrice", "Operativni sistem i pregledač", "Pozadinska slika", "Čuvar ekrana"],
           tacno: 1,
         },
       ],
@@ -972,7 +1065,7 @@ export const SCENARIOS_DATA = [
     order: 3,
     tekst: "Tražiš gdje preuzeti aplikaciju. Koja od ove dvije opcije je legitimni Google Play?",
     hint: "Pazi na domen i dizajn — lažni Google Play sajtovi su često savršene kopije.",
-    objasnjenje: "Lažni app store sajtovi su dizajnirani da izgledaju identično kao originals. Jedina sigurna provjera je domen: pravi Google Play je isključivo play.google.com. Svaki drugi domen je lažan, bez obzira kako identično izgleda. Na mobitelu — uvijek koristi ugrađeni Play Store aplikaciju.",
+    objasnjenje: "Lažni app store sajtovi su dizajnirani da izgledaju identično kao originalni. Jedina sigurna provjera je domen: pravi Google Play je isključivo play.google.com. Svaki drugi domen je lažan, bez obzira na to koliko identično izgleda. Na telefonu — uvijek koristi ugrađenu Play Store aplikaciju.",
     gameData: {
       tip: "url",
       uputstvo: "Koji link vodi na pravi Google Play?",

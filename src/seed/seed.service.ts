@@ -84,38 +84,49 @@ export class SeedService implements OnApplicationBootstrap {
           }),
         );
         this.logger.log(`Kreirana disciplina: ${topicData.slug}`);
-      } else if (!discipline.lekcija) {
+      } else {
+        // Sinhronizuj tekstualna polja teme iz seed.data.ts.
+        discipline.name = topicData.name;
+        discipline.description = topicData.opis;
+        discipline.icon = topicData.ikona;
+        discipline.colorClass = topicData.colorClass;
+        discipline.order = topicData.order;
         discipline.lekcija = topicData.lekcija;
         await this.disciplineRepo.save(discipline);
       }
 
       const scenarios = SCENARIOS_DATA.filter((s) => s.topicSlug === topicData.slug);
       for (const s of scenarios) {
-        const existing = await this.questRepo.findOneBy({ title: s.title, interactionType: s.interactionType as any });
-        if (existing) continue;
+        // Sadržajna polja se uvijek sinhronizuju iz seed.data.ts (jedini izvor istine),
+        // pa ispravke teksta/jezika stignu u bazu i na već postojeće scenarije.
+        const payload = {
+          title: s.title,
+          difficulty: s.difficulty as any,
+          basePoints: s.xp,
+          xp: s.xp,
+          questType: "multiple_choice" as any,
+          orderInDiscipline: s.order,
+          scenario: s.tekst,
+          taskText: s.tekst,
+          hintText: s.hint ?? "",
+          feedbackCorrect: s.objasnjenje,
+          miniConclusion: s.objasnjenje.slice(0, 120),
+          interactionType: s.interactionType as any,
+          gameData: s.gameData as any,
+          correctData: s.correctData as any,
+          objasnjenje: s.objasnjenje,
+          isActive: true,
+        };
 
-        await this.questRepo.save(
-          this.questRepo.create({
-            discipline,
-            title: s.title,
-            difficulty: s.difficulty as any,
-            basePoints: s.xp,
-            xp: s.xp,
-            questType: "multiple_choice" as any,
-            orderInDiscipline: s.order,
-            scenario: s.tekst,
-            taskText: s.tekst,
-            hintText: s.hint ?? "",
-            feedbackCorrect: s.objasnjenje,
-            miniConclusion: s.objasnjenje.slice(0, 120),
-            interactionType: s.interactionType as any,
-            gameData: s.gameData as any,
-            correctData: s.correctData as any,
-            objasnjenje: s.objasnjenje,
-            isActive: true,
-          }),
-        );
-        this.logger.log(`Kreiran scenario: ${s.title}`);
+        const existing = await this.questRepo.findOneBy({ title: s.title, interactionType: s.interactionType as any });
+        if (existing) {
+          this.questRepo.merge(existing, payload);
+          await this.questRepo.save(existing);
+          this.logger.log(`Ažuriran scenario: ${s.title}`);
+        } else {
+          await this.questRepo.save(this.questRepo.create({ discipline, ...payload }));
+          this.logger.log(`Kreiran scenario: ${s.title}`);
+        }
       }
     }
   }
