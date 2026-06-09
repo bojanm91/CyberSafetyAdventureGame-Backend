@@ -90,7 +90,16 @@ export class NotificationsService {
     }
 
     await this.disableInvalidTokens(tokens, tickets);
-    return { sent: messages.length, tickets };
+    return { sent: this.countSuccessfulTickets(tickets, messages.length), tickets };
+  }
+
+  private countSuccessfulTickets(tickets: unknown, fallback: number) {
+    const ticketItems = Array.isArray((tickets as { data?: unknown })?.data)
+      ? ((tickets as { data: Array<{ status?: string }> }).data)
+      : [];
+
+    if (!ticketItems.length) return fallback;
+    return ticketItems.filter((ticket) => ticket.status === "ok").length;
   }
 
   private async disableInvalidTokens(tokens: PushToken[], tickets: unknown) {

@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -19,14 +20,26 @@ import { UserQuestProgress } from "./entities/user-quest-progress.entity";
 import { Badge } from "./entities/badge.entity";
 import { UserBadge } from "./entities/user-badge.entity";
 import { PushToken } from "./entities/push-token.entity";
+import { NotificationDelivery } from "./entities/notification-delivery.entity";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: "mysql",
       url: process.env.DATABASE_URL,
-      entities: [User, Discipline, Quest, QuestOption, UserQuestProgress, Badge, UserBadge, PushToken],
+      entities: [
+        User,
+        Discipline,
+        Quest,
+        QuestOption,
+        UserQuestProgress,
+        Badge,
+        UserBadge,
+        PushToken,
+        NotificationDelivery,
+      ],
       synchronize: true,
     }),
     HealthModule,
