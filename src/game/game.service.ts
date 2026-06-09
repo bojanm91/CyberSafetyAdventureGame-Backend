@@ -532,9 +532,108 @@ export class GameService {
     "Backup bitnih podataka znači da te ransomware (ucjenjivački virus) ne može uceniti — samo vratiš svoju kopiju.",
   ];
 
+  private static readonly BYTE_TOPICS = [
+    "jake lozinke",
+    "dvofaktorska autentifikacija",
+    "phishing poruke",
+    "lažni linkovi",
+    "javni Wi-Fi",
+    "ažuriranja aplikacija",
+    "privatnost na društvenim mrežama",
+    "backup podataka",
+    "sigurno preuzimanje fajlova",
+  ];
+
   private pickFallbackFact(): { fact: string; source: "fallback" } {
     const list = GameService.BYTE_FALLBACK_FACTS;
     return { fact: list[Math.floor(Math.random() * list.length)], source: "fallback" };
+  }
+
+  private pickByteTopic(): string {
+    const topics = GameService.BYTE_TOPICS;
+    return topics[Math.floor(Math.random() * topics.length)];
+  }
+
+  private cleanByteFact(text: string | undefined): string | null {
+    if (!text) return null;
+
+    let fact = text
+      .replace(/```[\s\S]*?```/g, " ")
+      .replace(/^["'\s]+|["'\s]+$/g, "")
+      .replace(/^(bajt|savjet|činjenica|odgovor)\s*:\s*/i, "")
+      .replace(/^\s*[-*•\d.)]+\s*/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const replacements: Array<[RegExp, string]> = [
+      [/\bcyber\b/gi, "sajber"],
+      [/\bbezbednost(i)?\b/gi, "bezbjednost$1"],
+      [/\bproveri\b/gi, "provjeri"],
+      [/\bproveravaj\b/gi, "provjeravaj"],
+      [/\buvek\b/gi, "uvijek"],
+      [/\bsledeći\b/gi, "sljedeći"],
+      [/\bsledeća\b/gi, "sljedeća"],
+      [/\bnedelju\b/gi, "sedmicu"],
+      [/\bkombini\b/gi, "kombinuj"],
+      [/\bkombiniju\b/gi, "kombinuj"],
+      [/\bpogadjanje\b/gi, "pogađanje"],
+      [/\bspecijalne znakove\b/gi, "posebne znakove"],
+      [/\bredovito\b/gi, "redovno"],
+      [/\bnetko\b/gi, "neko"],
+      [/\bpogreške\b/gi, "greške"],
+      [/\be-poruci\b/gi, "poruci"],
+      [/\bRazvojaci\b/g, "Razvijači"],
+      [/\brazvojaci\b/g, "razvijači"],
+      [/\bosobne informacije\b/gi, "lične podatke"],
+      [/\bosobni podatci\b/gi, "lični podaci"],
+      [/\brazmislite\b/gi, "razmisli"],
+      [/\bsigurnosne ispravke\b/gi, "bezbjednosne zakrpe"],
+      [/\bsigurnosne propuste\b/gi, "bezbjednosne propuste"],
+      [/\bsigurnosne pukotine\b/gi, "bezbjednosne propuste"],
+      [/\bsigurnom mjestu\b/gi, "bezbjednom mjestu"],
+      [/\bsigurnijim\b/gi, "bezbjednijim"],
+      [/\bvaše podatke\b/gi, "tvoje podatke"],
+      [/\bvaš nalog\b/gi, "tvoj nalog"],
+      [/\bs sličnim\b/gi, "sa sličnim"],
+      [/\bpuno veća\b/gi, "znatno veća"],
+      [/\bteže za pogoditi\b/gi, "teža za pogađanje"],
+      [/\botkriti varanje\b/gi, "otkriti prevaru"],
+      [/\bda zaštiti podatke\b/gi, "da zaštitiš podatke"],
+      [/\bPostavljanje postavki privatnosti na najstroži način\b/g, "Stroža podešavanja privatnosti"],
+      [/\bpostavki privatnosti\b/gi, "podešavanja privatnosti"],
+      [/\bsumnjivo izgledajućoj poruci\b/gi, "sumnjivoj poruci"],
+      [/\bčesto lažno se predstavljaju\b/gi, "često se lažno predstavljaju"],
+    ];
+    for (const [pattern, value] of replacements) fact = fact.replace(pattern, value);
+
+    const sentences = fact.match(/[^.!?]+[.!?]+/g);
+    if (sentences && sentences.length > 2) fact = sentences.slice(0, 2).join(" ").trim();
+
+    const lower = fact.toLowerCase();
+    const blocked = [
+      "as an ai",
+      "i cannot",
+      "ne mogu",
+      "evo",
+      "here is",
+      "cybersecurity",
+      "password manager is a tool",
+      "mijeni ih redovno",
+      "mijenjaj ih redovno",
+      "mijenjaj lozinke redovno",
+      "redovno mijenjaj lozinke",
+    ];
+    if (blocked.some((word) => lower.includes(word))) return null;
+
+    const words = fact.split(/\s+/).filter(Boolean);
+    if (words.length < 8 || words.length > 46) return null;
+    if (fact.length < 45 || fact.length > 280) return null;
+
+    const serbianSignals = ["lozink", "nalog", "poruk", "link", "provjer", "sajber", "bezbjed", "podat", "aplikacij", "telefon"];
+    if (!serbianSignals.some((signal) => lower.includes(signal))) return null;
+
+    if (!/[.!?]$/.test(fact)) fact += ".";
+    return fact;
   }
 
   async getByteFact(): Promise<{ fact: string; source: "ai" | "fallback" }> {
@@ -542,6 +641,7 @@ export class GameService {
     if (!apiKey) return this.pickFallbackFact();
 
     const model = process.env.HF_MODEL ?? "meta-llama/Llama-3.1-8B-Instruct";
+    const topic = this.pickByteTopic();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     try {
@@ -557,15 +657,26 @@ export class GameService {
             {
               role: "system",
               content:
-                "Ti si Bajt, prijateljski robot-čuvar koji uči mlade o sajber bezbjednosti. " +
-                "Daj TAČNO jednu kratku, zanimljivu i tačnu činjenicu ili praktičan savjet o sajber " +
-                "bezbjednosti, na srpskom jeziku (ijekavica), najviše dvije rečenice. Budi vedar i " +
-                "konkretan. Bez uvoda, bez emodžija, vrati samo činjenicu.",
+                "Ti si Bajt, prijateljski robot-čuvar iz mobilne edukativne igre o sajber bezbjednosti. " +
+                "Pišeš za učenike i studente na srpskom jeziku, latinica, ijekavica. " +
+                "Vrati tačno jedan smislen, gramatički uredan savjet. Savjet mora biti konkretan i koristan, " +
+                "bez izmišljenih statistika, bez engleskih rečenica, bez ekavice, bez emodžija, bez navodnika, " +
+                "bez hrvatskih riječi poput 'redovito', 'netko', 'pogreške', 'osobne' i bez uvoda tipa 'Evo savjeta'. " +
+                "Ne savjetuj redovnu promjenu lozinki; promjena lozinke ima smisla kad postoji sumnja da je nalog ugrožen. " +
+                "Dužina: jedna ili dvije pune rečenice, 18 do 38 riječi. " +
+                "Koristi prirodne formulacije poput: provjeri, uvijek, sljedeći, bezbjednost, nalog, lozinka. " +
+                "Primjer tona: 'Prije nego otvoriš link iz poruke, zastani i provjeri adresu pošiljaoca. Prevaranti često kopiraju izgled poznatih servisa, ali detalji ih odaju.' " +
+                "Primjer tona: 'Za važne naloge uključi dvofaktorsku autentifikaciju. Čak i ako neko pogodi lozinku, bez dodatnog koda mu je mnogo teže da uđe.'",
             },
-            { role: "user", content: "Daj mi jednu zanimljivu činjenicu o sajber bezbjednosti." },
+            {
+              role: "user",
+              content:
+                `Napiši jedan Bajt savjet na temu: ${topic}. ` +
+                "Neka zvuči prirodno, kao kratka poruka dobrodošlice u aplikaciji.",
+            },
           ],
-          max_tokens: 120,
-          temperature: 0.9,
+          max_tokens: 95,
+          temperature: 0.3,
         }),
         signal: controller.signal,
       });
@@ -573,9 +684,8 @@ export class GameService {
       if (!res.ok) return this.pickFallbackFact();
       const data: any = await res.json();
       const text: string | undefined = data?.choices?.[0]?.message?.content?.trim();
-      if (!text) return this.pickFallbackFact();
-      // Skini eventualne navodnike i suvišan razmak.
-      const fact = text.replace(/^["'\s]+|["'\s]+$/g, "");
+      const fact = this.cleanByteFact(text);
+      if (!fact) return this.pickFallbackFact();
       return { fact, source: "ai" };
     } catch {
       return this.pickFallbackFact();
